@@ -11,6 +11,7 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
+import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
 import net.minecraft.core.WritableRegistry;
@@ -29,7 +30,7 @@ public record ConditionedOrigin(
 		Set<ResourceLocation> origins) {
 
 	public static final Codec<ConditionedOrigin> LARGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			ConfiguredEntityCondition.CODEC.optionalFieldOf("condition").forGetter(x -> Optional.ofNullable(x.condition())),
+			CalioCodecHelper.optionalField(ConfiguredEntityCondition.CODEC, "condition").forGetter(x -> Optional.ofNullable(x.condition())),
 			SerializableDataTypes.IDENTIFIERS.fieldOf("origins").forGetter(x -> ImmutableList.copyOf(x.origins()))
 	).apply(instance, (condition, origins) -> new ConditionedOrigin(condition.orElse(null), ImmutableSet.copyOf(origins))));
 

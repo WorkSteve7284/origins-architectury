@@ -37,14 +37,14 @@ public class Origin extends ForgeRegistryEntry.UncheckedRegistryEntry<Origin> {
 
 	public static final Codec<Origin> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			CalioCodecHelper.setOf(ResourceLocation.CODEC).fieldOf("powers").forGetter(Origin::getPowers),
-			ItemStack.CODEC.optionalFieldOf("icon", ItemStack.EMPTY).forGetter(Origin::getIcon),
-			Codec.BOOL.optionalFieldOf("unchoosable", false).forGetter(Origin::isUnchoosable),
-			Codec.INT.optionalFieldOf("order", Integer.MAX_VALUE).forGetter(Origin::getOrder),
-			OriginsDataTypes.IMPACT.optionalFieldOf("impact", Impact.NONE).forGetter(Origin::getImpact),
+			CalioCodecHelper.optionalField(ItemStack.CODEC, "icon", ItemStack.EMPTY).forGetter(Origin::getIcon),
+			CalioCodecHelper.optionalField(Codec.BOOL, "unchoosable", false).forGetter(Origin::isUnchoosable),
+			CalioCodecHelper.optionalField(Codec.INT, "order", Integer.MAX_VALUE).forGetter(Origin::getOrder),
+			CalioCodecHelper.optionalField(OriginsDataTypes.IMPACT, "impact", Impact.NONE).forGetter(Origin::getImpact),
 			CalioCodecHelper.COMPONENT_CODEC.fieldOf("name").forGetter(Origin::getName),
 			CalioCodecHelper.COMPONENT_CODEC.fieldOf("description").forGetter(Origin::getDescription),
 			CalioCodecHelper.setOf(OriginUpgrade.CODEC).fieldOf("upgrades").forGetter(Origin::getUpgrades),
-			Codec.BOOL.optionalFieldOf("special", false).forGetter(Origin::isSpecial)
+			CalioCodecHelper.optionalField(Codec.BOOL, "special", false).forGetter(Origin::isSpecial)
 	).apply(instance, Origin::new));
 
 	public Origin(Set<ResourceLocation> powers, ItemStack icon, boolean unchoosable, int order, Impact impact, Component name, Component description, Set<OriginUpgrade> upgrades, boolean special) {

@@ -119,9 +119,8 @@ public abstract class OriginDisplayScreen extends Screen {
 		}
 		Registry<ConfiguredPower<?, ?>> powers = ApoliAPI.getPowers();
 		for (ConfiguredPower<?, ?> power : origin.getPowers().stream().map(powers::get).filter(Objects::nonNull).toList()) {
-			if (power.getData().hidden()) {
+			if (power.getData().hidden())
 				continue;
-			}
 			FormattedCharSequence name = Language.getInstance().getVisualOrder(this.font.substrByWidth(power.getData().getName().withStyle(ChatFormatting.UNDERLINE), windowWidth - 36));
 			Component desc = power.getData().getDescription().copy();
 			List<FormattedCharSequence> drawLines = this.font.split(desc, windowWidth - 36);

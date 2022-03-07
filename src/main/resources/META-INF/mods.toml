@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/EdwinMindcraft/origins-architectury/issues"
 
 [[mods]]
 modId="origins"
-version="${file.jarVersion}"
+version="${version}"
 displayName="Origins"
 #logoFile=
 authors="Apace"
@@ -23,7 +23,7 @@ This mod adds several origins with passive abilities to the game, which you can 
 [[dependencies.origins]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.17.1]"
+    versionRange="[${mc_version}]"
     ordering="NONE"
     side="BOTH"
 

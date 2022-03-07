@@ -24,7 +24,6 @@ public abstract class WaterVisibilityMixin extends AbstractClientPlayer {
 
 	@Inject(at = @At("RETURN"), method = "getWaterVision", cancellable = true)
 	private void getUnderwaterVisibility(CallbackInfoReturnable<Float> info) {
-		//Changed to grant minimum water vision.
-		WaterVisionPower.getWaterVisionStrength(this).filter(x -> x > info.getReturnValueF()).ifPresent(info::setReturnValue);
+		WaterVisionPower.getWaterVisionStrength(this).ifPresent(info::setReturnValue);
 	}
 }

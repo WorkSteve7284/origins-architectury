@@ -42,7 +42,7 @@ public record OriginLayer(int order, ResourceLocation registryName,
 			Codec.BOOL.fieldOf("allow_random").forGetter(OriginLayer::allowRandom),
 			Codec.BOOL.fieldOf("allow_random_unchoosable").forGetter(OriginLayer::allowRandomUnchoosable),
 			CalioCodecHelper.setOf(ResourceLocation.CODEC).fieldOf("random_exclusions").forGetter(OriginLayer::randomExclusions),
-			ResourceLocation.CODEC.optionalFieldOf("default").forGetter(x -> Optional.ofNullable(x.defaultOrigin())),
+			CalioCodecHelper.optionalField(ResourceLocation.CODEC, "default").forGetter(x -> Optional.ofNullable(x.defaultOrigin())),
 			Codec.BOOL.fieldOf("auto_choose").forGetter(OriginLayer::autoChoose)
 	).apply(instance, (Integer order1, ResourceLocation registryName1, Set<ConditionedOrigin> conditionedOrigins1, Boolean enabled1, Component name1, Component missingName1, Component missingDescription1, Boolean allowRandom1, Boolean allowRandomUnchoosable1, Set<ResourceLocation> randomExclusions1, Optional<ResourceLocation> defaultOrigin1, Boolean autoChoose1) -> new OriginLayer(order1, registryName1, conditionedOrigins1, enabled1, name1, missingName1, missingDescription1, allowRandom1, allowRandomUnchoosable1, randomExclusions1, defaultOrigin1.orElse(null), autoChoose1)));
 

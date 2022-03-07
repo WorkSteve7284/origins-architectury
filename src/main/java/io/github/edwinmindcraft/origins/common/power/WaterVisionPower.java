@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.origins.common.power;
 
-import com.mojang.serialization.Codec;
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
