@@ -41,7 +41,7 @@ public class TemporaryCobwebBlock extends WebBlock {
 
 	@Override
 	public void onPlace(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean isMoving) {
-		worldIn.getBlockTicks().scheduleTick(pos, this, 60);
+		worldIn.scheduleTick(pos, this, 60);
 		super.onPlace(state, worldIn, pos, oldState, isMoving);
 	}
 }

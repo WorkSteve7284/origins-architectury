@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[37,)"
+loaderVersion="[39,)"
 license="MIT"
 issueTrackerURL="https://github.com/EdwinMindcraft/origins-architectury/issues"
 
@@ -16,7 +16,7 @@ This mod adds several origins with passive abilities to the game, which you can 
 [[dependencies.origins]]
     modId="forge"
     mandatory=true
-    versionRange="[37.0.74,)"
+    versionRange="${forge_requirements}"
     ordering="NONE"
     side="BOTH"
 

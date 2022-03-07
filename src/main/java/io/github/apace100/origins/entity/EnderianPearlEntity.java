@@ -18,7 +18,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityTeleportEvent;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 public class EnderianPearlEntity extends ThrownEnderpearl {
@@ -46,9 +46,9 @@ public class EnderianPearlEntity extends ThrownEnderpearl {
 	protected void onHit(HitResult result) {
 		HitResult.Type hitresult$type = result.getType();
 		if (hitresult$type == HitResult.Type.ENTITY)
-			this.onHitEntity((EntityHitResult)result);
+			this.onHitEntity((EntityHitResult) result);
 		else if (hitresult$type == HitResult.Type.BLOCK)
-			this.onHitBlock((BlockHitResult)result);
+			this.onHitBlock((BlockHitResult) result);
 
 		if (hitresult$type != HitResult.Type.MISS)
 			this.gameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());

@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.common.power.DummyPower;
 import io.github.edwinmindcraft.origins.common.power.NoSlowdownPower;
 import io.github.edwinmindcraft.origins.common.power.WaterVisionPower;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 public class OriginsPowerTypes {
 

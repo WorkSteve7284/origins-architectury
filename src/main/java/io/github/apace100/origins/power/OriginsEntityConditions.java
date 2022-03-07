@@ -2,7 +2,7 @@ package io.github.apace100.origins.power;
 
 import io.github.edwinmindcraft.origins.common.condition.OriginCondition;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 
 public class OriginsEntityConditions {
 
