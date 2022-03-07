@@ -8,3 +8,8 @@ visit [the official wiki](https://origins.readthedocs.io/) written for fabric.
 
 ## Building from source
 
+The code to build the repository has moved to [here](https://github.com/EdwinMindcraft/origins-forge).
+
+### Disclaimer:
+The project doesn't allow for the creation of a unified build yet, which is why there isn't a release
+with the new bugfixes.
