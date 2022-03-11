@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.origins.data.generator;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.origins.Origins;
@@ -14,10 +13,8 @@ import io.github.edwinmindcraft.apoli.api.power.ConditionData;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
-import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
-import io.github.edwinmindcraft.apoli.api.power.factory.ItemCondition;
 import io.github.edwinmindcraft.apoli.common.action.configuration.BlockConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.meta.IfElseConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.EnchantmentConfiguration;
@@ -60,7 +57,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 		builder.put("underwater",
 				ApoliPowers.MODIFY_BREAK_SPEED.get()
 						.configure(
-								new ModifyBreakSpeedConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
+								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.SUBMERGED_IN.get().configure(new TagConfiguration<>(FluidTags.WATER)),
 										ApoliEntityConditions.ENCHANTMENT.get().configure(new EnchantmentConfiguration(new IntegerComparisonConfiguration(Comparison.EQUAL, 0), Enchantments.AQUA_AFFINITY, EnchantmentConfiguration.Calculation.SUM))
@@ -68,7 +65,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 		builder.put("ungrounded",
 				ApoliPowers.MODIFY_BREAK_SPEED.get()
 						.configure(
-								new ModifyBreakSpeedConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
+								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.FLUID_HEIGHT.get().configure(new FluidTagComparisonConfiguration(new DoubleComparisonConfiguration(Comparison.GREATER_THAN, 0), FluidTags.WATER)),
 										ApoliEntityConditions.ON_BLOCK.get().configure(FieldConfiguration.of(Optional.empty()), new ConditionData(true))
