@@ -4,6 +4,7 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAc
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import io.github.edwinmindcraft.origins.common.power.configuration.OriginsCallbackConfiguration;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfiguration> implements IOriginCallbackPower<OriginsCallbackConfiguration> {
@@ -12,32 +13,32 @@ public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfigurat
 	}
 
 	@Override
-	protected void onGained(OriginsCallbackConfiguration configuration, LivingEntity player) {
+	protected void onGained(OriginsCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionGained(), player);
 	}
 
 	@Override
-	protected void onLost(OriginsCallbackConfiguration configuration, LivingEntity player) {
+	protected void onLost(OriginsCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionLost(), player);
 	}
 
 	@Override
-	protected void onAdded(OriginsCallbackConfiguration configuration, LivingEntity player) {
+	protected void onAdded(OriginsCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionAdded(), player);
 	}
 
 	@Override
-	protected void onRemoved(OriginsCallbackConfiguration configuration, LivingEntity player) {
+	protected void onRemoved(OriginsCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRemoved(), player);
 	}
 
 	@Override
-	protected void onRespawn(OriginsCallbackConfiguration configuration, LivingEntity player) {
+	protected void onRespawn(OriginsCallbackConfiguration configuration, Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRespawned(), player);
 	}
 
 	@Override
-	public void onChosen(OriginsCallbackConfiguration configuration, LivingEntity entity, boolean isOrb) {
+	public void onChosen(OriginsCallbackConfiguration configuration, Entity entity, boolean isOrb) {
 		if (!isOrb || configuration.onOrb())
 			ConfiguredEntityAction.execute(configuration.entityActionChosen(), entity);
 	}

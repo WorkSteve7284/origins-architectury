@@ -78,7 +78,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 
 		ImmutableMap.Builder<String, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
 		builder.put("webbing", ApoliPowers.TARGET_ACTION_ON_HIT.get().configure(
-				new ConditionedCombatActionConfiguration(200, new HudRender(true, 5, Origins.identifier("textures/gui/resource_bar.png"), null), null, null,
+				new ConditionedCombatActionConfiguration(200, new HudRender(true, 5, Origins.identifier("textures/gui/resource_bar.png"), null, false), null, null,
 						ApoliEntityActions.BLOCK_ACTION_AT.get().configure(FieldConfiguration.of(
 								ApoliBlockActions.IF_ELSE.get().configure(new IfElseConfiguration<>(
 										ApoliBlockConditions.REPLACEABLE.get().configure(NoConfiguration.INSTANCE),
@@ -96,10 +96,10 @@ public class OriginsPowerProvider extends PowerGenerator {
 		));
 		builder.put("punch_through", ApoliPowers.PREVENT_BLOCK_SELECTION.get().configure(FieldConfiguration.of(Optional.of(inCobwebs)), PowerData.builder()
 				.addCondition(ApoliEntityConditions.SNEAKING.get().configure(NoConfiguration.INSTANCE, new ConditionData(true))).build()));
-		builder.put("sense", ApoliPowers.ENTITY_GLOW.get().configure(FieldConfiguration.of(Optional.of(ApoliEntityConditions.and(
+		builder.put("sense", ApoliPowers.ENTITY_GLOW.get().configure(new EntityGlowConfiguration(ApoliEntityConditions.and(
 				ApoliEntityConditions.IN_BLOCK_ANYWHERE.get().configure(new InBlockAnywhereConfiguration(inCobwebs)),
 				ApoliEntityConditions.ENTITY_GROUP.get().configure(FieldConfiguration.of(MobType.ARTHROPOD), new ConditionData(true))
-		))), PowerData.DEFAULT));
+		)), PowerData.DEFAULT));
 		//FIXME Recipe serialization is broken for now.
 		builder.put("web_crafting", ApoliPowers.RECIPE.get().configure(FieldConfiguration.of(
 				new ShapelessRecipe(Origins.identifier("master_of_webs/web_crafting"), "", Items.COBWEB.getDefaultInstance(), NonNullList.of(Ingredient.of(Items.STRING), Ingredient.of(Items.STRING)))

@@ -5,6 +5,7 @@ import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import io.github.edwinmindcraft.origins.common.condition.configuration.OriginConfiguration;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
@@ -14,7 +15,7 @@ public class OriginCondition extends EntityCondition<OriginConfiguration> {
 	}
 
 	@Override
-	public boolean check(OriginConfiguration configuration, LivingEntity entity) {
+	public boolean check(OriginConfiguration configuration, Entity entity) {
 		return IOriginContainer.get(entity).resolve().map(container -> {
 			if (configuration.layer() != null) {
 				OriginLayer layer = OriginsAPI.getLayersRegistry().get(configuration.layer());
