@@ -80,10 +80,13 @@ public class OriginLayer implements Comparable<OriginLayer> {
 		return this.wrapped.allowRandom();
 	}
 
+    public boolean isHidden() {
+        return this.wrapped.hidden();
+    }
+
 	public List<ResourceLocation> getRandomOrigins(Player playerEntity) {
 		return this.wrapped.randomOrigins(playerEntity);
 	}
-
 
 	@Override
 	public int hashCode() {

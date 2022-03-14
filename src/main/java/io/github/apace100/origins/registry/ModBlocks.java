@@ -1,6 +1,6 @@
 package io.github.apace100.origins.registry;
 
-import io.github.apace100.origins.block.TemporaryCobwebBlock;
+import io.github.apace100.origins.content.TemporaryCobwebBlock;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;

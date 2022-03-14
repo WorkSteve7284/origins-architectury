@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.component.PlayerOriginComponent;
+import io.github.apace100.origins.util.ChoseOriginCriterion;
 import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -20,6 +21,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
@@ -63,6 +65,9 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 					this.hadAllOrigins.set(true);
 			});
 			this.synchronize();
+			if(player instanceof ServerPlayer sp) {
+				ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
+			}
 		}
 	}
 
@@ -104,6 +109,11 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	@Override
 	public boolean shouldSync() {
 		return this.synchronization.get();
+	}
+	
+	@Override
+	public @NotNull Player getOwner() {
+		return this.player;
 	}
 
 	@Override
@@ -224,6 +234,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 		Registry<Origin> origins = OriginsAPI.getOriginsRegistry();
 		map.forEach((layer, origin) -> layers.getOptional(layer).ifPresent(l -> origins.getOptional(origin).ifPresent(o -> this.layers.put(l, o))));
 		this.hadAllOrigins.set(hadAllOrigins);
+
 	}
 
 	@Override
@@ -250,16 +261,6 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 		Registry<OriginLayer> registry = OriginsAPI.getLayersRegistry();
 		Registry<Origin> origins = OriginsAPI.getOriginsRegistry();
 		for (String key : layers.getAllKeys()) {
-			ResourceLocation rl = ResourceLocation.tryParse(key);
-			if (rl == null) {
-				Origins.LOGGER.warn("Invalid layer found {} on entity {}", key, this.player.getScoreboardName());
-				continue;
-			}
-			OriginLayer layer = registry.get(rl);
-			if (layer == null) {
-				Origins.LOGGER.warn("Missing layer {} on entity {}", rl, this.player.getScoreboardName());
-				continue;
-			}
 			String origin = layers.getString(key);
 			if (origin.isBlank())
 				continue;
@@ -271,6 +272,19 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 			Origin origin1 = origins.get(orig);
 			if (origin1 == null) {
 				Origins.LOGGER.warn("Missing origin {} found for layer {} on entity {}", origin, key, this.player.getScoreboardName());
+				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(orig)));
+				continue;
+			}
+			ResourceLocation rl = ResourceLocation.tryParse(key);
+			if (rl == null) {
+				Origins.LOGGER.warn("Invalid layer found {} on entity {}", key, this.player.getScoreboardName());
+				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1)));
+				continue;
+			}
+			OriginLayer layer = registry.get(rl);
+			if (layer == null) {
+				Origins.LOGGER.warn("Missing layer {} on entity {}", rl, this.player.getScoreboardName());
+				IPowerContainer.get(this.player).ifPresent(container -> container.removeAllPowersFromSource(OriginsAPI.getPowerSource(origin1)));
 				continue;
 			}
 			this.setOrigin(layer, origin1);

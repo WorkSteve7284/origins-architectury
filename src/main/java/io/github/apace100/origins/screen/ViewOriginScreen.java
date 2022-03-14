@@ -9,9 +9,9 @@ import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,18 +23,16 @@ import java.util.Map;
 
 public class ViewOriginScreen extends OriginDisplayScreen {
 
-	private static final ResourceLocation WINDOW = new ResourceLocation(Origins.MODID, "textures/gui/choose_origin.png");
-
 	private final ArrayList<Tuple<OriginLayer, Origin>> originLayers;
 	private int currentLayer = 0;
-
 	private Button chooseOriginButton;
 
 	public ViewOriginScreen() {
-		super(new TranslatableComponent(Origins.MODID + ".screen.view_origin"));
-		Map<OriginLayer, Origin> origins = IOriginContainer.get(Minecraft.getInstance().player).map(IOriginContainer::getOrigins).orElseGet(ImmutableMap::of);
-		this.originLayers = new ArrayList<>(origins.size());
+		super(new TranslatableComponent(Origins.MODID + ".screen.view_origin"), false);
 		Player player = Minecraft.getInstance().player;
+		Map<OriginLayer, Origin> origins = IOriginContainer.get(player).map(IOriginContainer::getOrigins).orElseGet(ImmutableMap::of);
+		this.originLayers = new ArrayList<>(origins.size());
+
 		origins.forEach((layer, origin) -> {
 			ItemStack displayItem = origin.getIcon().copy();
 			if (displayItem.getItem() == Items.PLAYER_HEAD) {
@@ -42,11 +40,17 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 					displayItem.getOrCreateTag().putString("SkullOwner", player.getDisplayName().getString());
 				}
 			}
-			if (origin != Origin.EMPTY || layer.getOriginOptionCount(player) > 0) {
+			if ((origin != Origin.EMPTY || layer.getOriginOptionCount(player) > 0) && !layer.hidden()) {
 				this.originLayers.add(new Tuple<>(layer, origin));
 			}
 		});
 		this.originLayers.sort(Comparator.comparing(Tuple::getA));
+		if (this.originLayers.size() > 0) {
+			Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
+			this.showOrigin(current.getB(), current.getA(), false);
+		} else {
+			this.showOrigin(null, null, false);
+		}
 	}
 
 	@Override
@@ -65,16 +69,20 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 			}));
 			Player player = Minecraft.getInstance().player;
 			this.chooseOriginButton.active = this.chooseOriginButton.visible = this.originLayers.get(this.currentLayer).getB() == Origin.EMPTY && this.originLayers.get(this.currentLayer).getA().getOriginOptionCount(player) > 0;
-			this.addRenderableWidget(new Button(this.guiLeft - 40, this.height / 2 - 10, 20, 20, new TextComponent("<"), b -> {
-				this.currentLayer = (this.currentLayer - 1 + this.originLayers.size()) % this.originLayers.size();
-				this.chooseOriginButton.active = this.chooseOriginButton.visible = this.originLayers.get(this.currentLayer).getB() == Origin.EMPTY && this.originLayers.get(this.currentLayer).getA().getOriginOptionCount(player) > 0;
-				this.scrollPos = 0;
-			}));
-			this.addRenderableWidget(new Button(this.guiLeft + windowWidth + 20, this.height / 2 - 10, 20, 20, new TextComponent(">"), b -> {
-				this.currentLayer = (this.currentLayer + 1) % this.originLayers.size();
-				this.chooseOriginButton.active = this.chooseOriginButton.visible = this.originLayers.get(this.currentLayer).getB() == Origin.EMPTY && this.originLayers.get(this.currentLayer).getA().getOriginOptionCount(player) > 0;
-				this.scrollPos = 0;
-			}));
+			if (this.originLayers.size() > 1) {
+				this.addRenderableWidget(new Button(this.guiLeft - 40, this.height / 2 - 10, 20, 20, new TextComponent("<"), b -> {
+					this.currentLayer = (this.currentLayer - 1 + this.originLayers.size()) % this.originLayers.size();
+					Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
+					this.showOrigin(current.getB(), current.getA(), false);
+					this.chooseOriginButton.active = this.chooseOriginButton.visible = current.getB() == Origin.EMPTY && current.getA().getOriginOptionCount(player) > 0;
+				}));
+				this.addRenderableWidget(new Button(this.guiLeft + windowWidth + 20, this.height / 2 - 10, 20, 20, new TextComponent(">"), b -> {
+					this.currentLayer = (this.currentLayer + 1) % this.originLayers.size();
+					Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
+					this.showOrigin(current.getB(), current.getA(), false);
+					this.chooseOriginButton.active = this.chooseOriginButton.visible = current.getB() == Origin.EMPTY && current.getA().getOriginOptionCount(player) > 0;
+				}));
+			}
 		}
 		this.addRenderableWidget(new Button(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight + 5, 100, 20, new TranslatableComponent(Origins.MODID + ".gui.close"), b -> {
 			Minecraft.getInstance().setScreen(null);
@@ -83,28 +91,18 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 
 	@Override
 	public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.renderOriginWindow(matrices, mouseX, mouseY);
 		super.render(matrices, mouseX, mouseY, delta);
-	}
-
-	protected Origin getCurrentOrigin() {
-		return this.originLayers.get(this.currentLayer).getB();
+		if (this.originLayers.size() == 0) {
+			//if(OriginsClient.isServerRunningOrigins) {
+			drawCenteredString(matrices, this.font, new TranslatableComponent(Origins.MODID + ".gui.view_origin.empty").getString(), this.width / 2, this.guiTop + 48, 0xFFFFFF);
+			//} else {
+			//	drawCenteredText(matrices, this.textRenderer, new TranslatableText(Origins.MODID + ".gui.view_origin.not_installed").getString(), width / 2, guiTop + 48, 0xFFFFFF);
+			//}
+		}
 	}
 
 	@Override
-	protected OriginLayer getCurrentLayer() {
-		if (this.currentLayer >= this.originLayers.size() || this.currentLayer < 0)
-			return null;
-		return this.originLayers.get(this.currentLayer).getA();
-	}
-
-
-	@Override
-	public boolean mouseScrolled(double x, double y, double z) {
-		boolean retValue = super.mouseScrolled(x, y, z);
-		int np = this.scrollPos - (int) z * 4;
-		this.scrollPos = np < 0 ? 0 : Math.min(np, this.currentMaxScroll);
-		return retValue;
+	protected Component getTitleText() {
+		return new TranslatableComponent(Origins.MODID + ".gui.view_origin.title", this.getCurrentLayer().name());
 	}
 }

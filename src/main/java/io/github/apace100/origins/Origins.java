@@ -7,8 +7,8 @@ import io.github.apace100.origins.origin.Origin;
 import io.github.apace100.origins.power.OriginsEntityConditions;
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.apace100.origins.registry.*;
+import io.github.apace100.origins.screen.BadgeManager;
 import io.github.apace100.origins.util.ChoseOriginCriterion;
-import io.github.apace100.origins.util.GainedPowerCriterion;
 import io.github.apace100.origins.util.OriginsConfigSerializer;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.common.OriginsCommon;
@@ -35,6 +35,7 @@ public class Origins {
 	public static final Logger LOGGER = LogManager.getLogger(Origins.class);
 
 	public static ServerConfig config;
+	public static BadgeManager badgeManager;
 
 	public Origins() {
 		VERSION = ModLoadingContext.get().getActiveContainer().getModInfo().getVersion().toString();
@@ -62,9 +63,10 @@ public class Origins {
 		NamespaceAlias.addAlias("origins", "apoli");
 
 		CriteriaTriggers.register(ChoseOriginCriterion.INSTANCE);
-		CriteriaTriggers.register(GainedPowerCriterion.INSTANCE);
 		ArgumentTypes.register("origins:origin", OriginArgumentType.class, new EmptyArgumentSerializer<>(OriginArgumentType::origin));
 		ArgumentTypes.register("origins:layer", LayerArgumentType.class, new EmptyArgumentSerializer<>(LayerArgumentType::layer));
+
+		badgeManager = new BadgeManager();
 	}
 
 	public static ResourceLocation identifier(String path) {

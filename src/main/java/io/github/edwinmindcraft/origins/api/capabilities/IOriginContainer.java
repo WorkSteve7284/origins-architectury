@@ -20,14 +20,15 @@ import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface IOriginContainer extends INBTSerializable<Tag> {
-	static LazyOptional<IOriginContainer> get(Entity entity) {
-		return entity.getCapability(OriginsAPI.ORIGIN_CONTAINER);
+	static LazyOptional<IOriginContainer> get(@Nullable Entity entity) {
+		return entity != null ? entity.getCapability(OriginsAPI.ORIGIN_CONTAINER) : LazyOptional.empty();
 	}
 
 	/**
@@ -92,7 +93,7 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	boolean checkAutoChoosingLayers(boolean includeDefaults);
 
 	/**
-	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, LivingEntity, boolean)} on powers associated
+	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, Entity, boolean)} on powers associated
 	 * with the given origin.
 	 * @param origin The origin to trigger onChosen for.
 	 * @param isOrb If first pick actions should be triggered.
@@ -100,7 +101,7 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	void onChosen(Origin origin, boolean isOrb);
 
 	/**
-	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, LivingEntity, boolean)} on all powers.
+	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, Entity, boolean)} on all powers.
 	 * @param isOrb If first pick actions should be triggered.
 	 */
 	void onChosen(boolean isOrb);
@@ -108,4 +109,6 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	void onReload();
 
 	OriginComponent asLegacyComponent();
+	
+	Player getOwner();
 }

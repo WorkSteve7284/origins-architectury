@@ -23,6 +23,7 @@ import io.github.edwinmindcraft.origins.common.capabilities.OriginContainer;
 import io.github.edwinmindcraft.origins.common.data.LayerLoader;
 import io.github.edwinmindcraft.origins.common.data.OriginLoader;
 import io.github.edwinmindcraft.origins.common.network.S2COpenOriginScreen;
+import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeBadges;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.particles.ParticleTypes;
@@ -37,10 +38,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -83,6 +86,12 @@ public class OriginsEventHandler {
 	public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
 		if (event.getObject() instanceof Player player)
 			event.addCapability(OriginContainer.ID, new OriginContainer(player));
+	}
+
+	@SubscribeEvent
+	public static void onDataSync(OnDatapackSyncEvent event) {
+		PacketDistributor.PacketTarget target = event.getPlayer() == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(event::getPlayer);
+		OriginsCommon.CHANNEL.send(target, Origins.badgeManager.createPacket());
 	}
 
 	@SubscribeEvent

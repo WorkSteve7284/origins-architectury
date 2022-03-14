@@ -48,7 +48,14 @@ public class OriginsAPI {
 		return POWER_SOURCE_CACHE.computeIfAbsent(registryName, OriginsAPI::createPowerSource);
 	}
 
+	public static ResourceLocation getPowerSource(ResourceLocation origin) {
+		Validate.notNull(origin, "Unregistered origins cannot provide powers.");
+		return POWER_SOURCE_CACHE.computeIfAbsent(origin, OriginsAPI::createPowerSource);
+	}
+
 	private static ResourceLocation createPowerSource(ResourceLocation key) {
-		return new ResourceLocation(key.getNamespace(), "origins/" + key.getPath());
+		//Fabric command compat.
+		//If this were up to me, the power source would've been <namespace>:origins/<path>
+		return new ResourceLocation(key.getNamespace(), key.getPath());
 	}
 }

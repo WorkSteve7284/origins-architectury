@@ -1,15 +1,12 @@
 package io.github.apace100.origins.origin;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * @deprecated Use {@link OriginsAPI#getLayersRegistry()} where possible instead.

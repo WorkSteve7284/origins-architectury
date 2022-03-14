@@ -28,6 +28,9 @@ public class OriginsCommon {
 		CHANNEL.messageBuilder(S2CConfirmOrigin.class, message++, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(S2CConfirmOrigin::encode).decoder(S2CConfirmOrigin::decode)
 				.consumer(S2CConfirmOrigin::handle).add();
+		CHANNEL.messageBuilder(S2CSynchronizeBadges.class, message++, NetworkDirection.PLAY_TO_CLIENT)
+				.encoder(S2CSynchronizeBadges::encode).decoder(S2CSynchronizeBadges::decode)
+				.consumer(S2CSynchronizeBadges::handle).add();
 
 		CHANNEL.messageBuilder(C2SChooseRandomOrigin.class, message++, NetworkDirection.PLAY_TO_SERVER)
 				.encoder(C2SChooseRandomOrigin::encode).decoder(C2SChooseRandomOrigin::decode)

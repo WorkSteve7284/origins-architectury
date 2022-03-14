@@ -5,8 +5,6 @@ import io.github.apace100.origins.origin.OriginLayer;
 import io.github.apace100.origins.origin.OriginLayers;
 import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
-import net.minecraft.nbt.CompoundTag;
-
 import java.util.HashMap;
 
 public class PlayerOriginComponent implements OriginComponent {
@@ -49,14 +47,24 @@ public class PlayerOriginComponent implements OriginComponent {
 	public void setOrigin(OriginLayer layer, Origin origin) {
 		this.wrapped.setOrigin(layer.getWrapped(), origin.getWrapped());
 	}
+/*
+    private void grantPowersFromOrigin(Origin origin, PowerHolderComponent powerComponent) {
+        Identifier source = origin.getIdentifier();
+        for(PowerType<?> powerType : origin.getPowerTypes()) {
+            if(!powerComponent.hasPower(powerType, source)) {
+                powerComponent.addPower(powerType, source);
+            }
+        }
+    }
 
-    /*@Override
-    public void readFromNbt(CompoundTag compoundTag) {
-        this.cachedData = compoundTag;
-    }*/
+    private void revokeRemovedPowers(Origin origin, PowerHolderComponent powerComponent) {
+        Identifier source = origin.getIdentifier();
+        List<PowerType<?>> powersByOrigin = powerComponent.getPowersFromSource(source);
+        powersByOrigin.stream().filter(p -> !origin.hasPowerType(p)).forEach(p -> powerComponent.removePower(p, source));
+    }
 
-/*    private void fromTag(CompoundTag compoundTag) {
-
+    @Override
+    public void readFromNbt(NbtCompound compoundTag) {
         if(player == null) {
             Origins.LOGGER.error("Player was null in `fromTag`! This is a bug!");
         }
@@ -89,11 +97,15 @@ public class PlayerOriginComponent implements OriginComponent {
                             origin = OriginRegistry.get(originId);
                         } catch(IllegalArgumentException e) {
                             Origins.LOGGER.warn("Could not find origin with id " + originId.toString() + ", which existed on the data of player " + player.getDisplayName().getContents() + ".");
+                            PowerHolderComponent powerComponent = PowerHolderComponent.KEY.get(player);
+                            powerComponent.removeAllPowersFromSource(originId);
                         }
                         if(origin != null) {
                             if(!layer.contains(origin) && !origin.isSpecial()) {
                                 Origins.LOGGER.warn("Origin with id " + origin.getIdentifier().toString() + " is not in layer " + layer.getIdentifier().toString() + " and is not special, but was found on " + player.getDisplayName().getContents() + ", setting to EMPTY.");
                                 origin = Origin.EMPTY;
+                                PowerHolderComponent powerComponent = PowerHolderComponent.KEY.get(player);
+                                powerComponent.removeAllPowersFromSource(originId);
                             }
                             this.origins.put(layer, origin);
                         }
@@ -143,6 +155,11 @@ public class PlayerOriginComponent implements OriginComponent {
     }
 
     @Override
+    public void onPowersRead() {
+        // NO-OP
+    }
+
+    @Override
     public void writeToNbt(CompoundTag compoundTag) {
         ListTag originLayerList = new ListTag();
         for(Map.Entry<OriginLayer, Origin> entry : origins.entrySet()) {
@@ -153,18 +170,10 @@ public class PlayerOriginComponent implements OriginComponent {
         }
         compoundTag.put("OriginLayers", originLayerList);
         compoundTag.putBoolean("HadOriginBefore", this.hadOriginBefore);
-    }
-
-    @Override
-    public void applySyncPacket(FriendlyByteBuf buf) {
-        CompoundTag compoundTag = buf.readNbt();
-        if(compoundTag != null) {
-            this.fromTag(compoundTag);
-        }
     }*/
 
-	@Override
-	public void sync() {
-		this.wrapped.synchronize();
-	}
+    @Override
+    public void sync() {
+        OriginComponent.sync(this.wrapped.getOwner());
+    }
 }

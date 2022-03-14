@@ -23,6 +23,9 @@ public interface OriginComponent {
 
 	void sync();
 
+	@Deprecated(forRemoval = true)
+	default void onPowersRead() { }
+
 	static void sync(Player player) {
 		IOriginContainer.get(player).ifPresent(IOriginContainer::synchronize);
 	}

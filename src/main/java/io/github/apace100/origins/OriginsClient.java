@@ -4,11 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.apace100.apoli.ApoliClient;
 import io.github.apace100.origins.registry.ModBlocks;
 import io.github.apace100.origins.registry.ModEntities;
-import io.github.apace100.origins.util.OriginsConfigSerializer;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -26,14 +21,9 @@ public class OriginsClient {
 	public static KeyMapping useSecondaryActivePowerKeybind;
 	public static KeyMapping viewCurrentOriginKeybind;
 
-	public static ClientConfig config;
-
 	public static boolean isServerRunningOrigins = false;
 
 	public static void initialize() {
-
-		AutoConfig.register(ClientConfig.class, OriginsConfigSerializer::new);
-		config = AutoConfig.getConfigHolder(ClientConfig.class).getConfig();
 
 		usePrimaryActivePowerKeybind = new KeyMapping("key.origins.primary_active", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "category." + Origins.MODID);
 		useSecondaryActivePowerKeybind = new KeyMapping("key.origins.secondary_active", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category." + Origins.MODID);
@@ -61,24 +51,5 @@ public class OriginsClient {
 
 	public static void entityRenderers(EntityRenderersEvent.RegisterRenderers event) {
 		event.registerEntityRenderer(ModEntities.ENDERIAN_PEARL.get(), ThrownItemRenderer::new);
-	}
-
-	@Config(name = Origins.MODID)
-	public static class ClientConfig implements ConfigData {
-
-		public int xOffset = 0;
-		public int yOffset = 0;
-
-		@ConfigEntry.BoundedDiscrete(max = 1)
-		public float phantomizedOverlayStrength = 0.8F;
-
-		@Override
-		public void validatePostLoad() {
-			if (phantomizedOverlayStrength < 0F) {
-				phantomizedOverlayStrength = 0F;
-			} else if (phantomizedOverlayStrength > 1F) {
-				phantomizedOverlayStrength = 1F;
-			}
-		}
 	}
 }

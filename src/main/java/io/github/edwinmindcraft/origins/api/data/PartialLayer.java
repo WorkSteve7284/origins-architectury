@@ -24,7 +24,8 @@ public record PartialLayer(@Nullable Integer order,
 						   @NotNull Set<ResourceLocation> excludeRandom,
 						   boolean replaceExcludeRandom,
 						   @Nullable ResourceLocation defaultOrigin,
-						   @Nullable Boolean autoChoose, int loadingPriority) {
+						   @Nullable Boolean autoChoose, int loadingPriority,
+						   @Nullable Boolean hidden) {
 
 	public static Comparator<PartialLayer> LOADING_COMPARATOR = Comparator.comparingInt(PartialLayer::loadingPriority);
 
@@ -47,7 +48,8 @@ public record PartialLayer(@Nullable Integer order,
 				.origins(other.origins())
 				.excludeRandom(other.excludeRandom())
 				.defaultOrigin(other.defaultOrigin() != null ? other.defaultOrigin() : this.defaultOrigin())
-				.autoChoose(other.autoChoose() != null ? other.autoChoose() : this.autoChoose());
+				.autoChoose(other.autoChoose() != null ? other.autoChoose() : this.autoChoose())
+				.hidden(other.hidden() != null ? other.hidden() : this.hidden());
 		if (!other.replace()) builder.origins(this.origins());
 		if (!other.replaceExcludeRandom()) builder.excludeRandom(this.excludeRandom());
 		return builder.build();
@@ -66,7 +68,8 @@ public record PartialLayer(@Nullable Integer order,
 				this.allowRandomUnchoosable() != null ? this.allowRandomUnchoosable() : false,
 				ImmutableSet.copyOf(this.excludeRandom()),
 				this.defaultOrigin(),
-				this.autoChoose() != null ? this.autoChoose() : false
+				this.autoChoose() != null ? this.autoChoose() : false,
+				this.hidden() != null ? this.hidden() : false
 		);
 	}
 
@@ -89,6 +92,7 @@ public record PartialLayer(@Nullable Integer order,
 			   Objects.equals(this.replaceExcludeRandom, that.replaceExcludeRandom) &&
 			   Objects.equals(this.defaultOrigin, that.defaultOrigin) &&
 			   Objects.equals(this.autoChoose, that.autoChoose) &&
+			   Objects.equals(this.hidden, that.hidden) &&
 			   this.loadingPriority == that.loadingPriority;
 	}
 
@@ -112,6 +116,7 @@ public record PartialLayer(@Nullable Integer order,
 			JsonUtils.getOptional(root, "default_origin", GsonHelper::getAsString).map(JsonUtils.rethrow(ResourceLocation::new, "\"default_origin\" isn't a valid identifier")).ifPresent(builder::defaultOrigin);
 			JsonUtils.getOptional(root, "auto_choose", GsonHelper::getAsBoolean).ifPresent(builder::autoChoose);
 			JsonUtils.getOptional(root, "replace_exclude_random", GsonHelper::getAsBoolean).ifPresent(builder::replaceExcludeRandom);
+			JsonUtils.getOptional(root, "hidden", GsonHelper::getAsBoolean).ifPresent(builder::hidden);
 
 			builder.origins(JsonUtils.getOptionalList(root, "origins", (jsonElement, s) -> context.deserialize(jsonElement, ConditionedOrigin.class)));
 			builder.excludeRandom(JsonUtils.getIdentifierList(root, "exclude_random"));
@@ -132,6 +137,7 @@ public record PartialLayer(@Nullable Integer order,
 			if (src.defaultOrigin() != null) root.addProperty("default_origin", src.defaultOrigin().toString());
 			if (src.autoChoose() != null) root.addProperty("auto_choose", src.autoChoose());
 			root.addProperty("replace_exclude_random", src.replaceExcludeRandom());
+			if (src.hidden() != null) root.addProperty("hidden", src.hidden());
 
 			JsonArray origins = src.origins().stream().map(x -> context.serialize(x, ConditionedOrigin.class)).collect(JsonUtils.toJsonArray());
 			if (origins.size() > 0) root.add("origins", origins);
@@ -156,6 +162,7 @@ public record PartialLayer(@Nullable Integer order,
 		private boolean replaceExcludeRandom = false;
 		private ResourceLocation defaultOrigin;
 		private Boolean autoChoose;
+		private Boolean hidden;
 		private int loadingPriority;
 
 		private Builder() {}
@@ -225,6 +232,11 @@ public record PartialLayer(@Nullable Integer order,
 			return this;
 		}
 
+		public Builder hidden(Boolean autoChoose) {
+			this.hidden = hidden;
+			return this;
+		}
+
 		public Builder loadingPriority(int loadingPriority) {
 			this.loadingPriority = loadingPriority;
 			return this;
@@ -233,7 +245,7 @@ public record PartialLayer(@Nullable Integer order,
 		public PartialLayer build() {
 			return new PartialLayer(this.order, this.origins, this.enabled, this.replace, this.name,
 					this.missingName, this.missingDescription, this.allowRandom, this.allowRandomUnchoosable, this.excludeRandom,
-					this.replaceExcludeRandom, this.defaultOrigin, this.autoChoose, this.loadingPriority);
+					this.replaceExcludeRandom, this.defaultOrigin, this.autoChoose, this.loadingPriority, this.hidden);
 		}
 	}
 }

@@ -1,14 +1,18 @@
 package io.github.apace100.origins.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
+import io.github.edwinmindcraft.origins.common.OriginsCommon;
+import io.github.edwinmindcraft.origins.common.network.S2COpenOriginScreen;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -79,6 +83,39 @@ public class OriginCommand {
 														command.getSource().sendSuccess(new TranslatableComponent("commands.origin.get.result", target.getDisplayName(), layer.name(), origin.getName(), origin.getRegistryName()), false);
 													});
 													return 1;
+												})
+										)
+								)
+						).then(literal("gui")
+								.then(argument("targets", EntityArgument.players())
+										.executes((command) -> {
+											Collection<ServerPlayer> targets = EntityArgument.getPlayers(command, "targets");
+											targets.forEach(target -> {
+												IOriginContainer.get(target).ifPresent(container -> {
+													OriginsAPI.getActiveLayers().forEach(x -> container.setOrigin(x, Origin.EMPTY));
+													container.synchronize();
+													container.checkAutoChoosingLayers(false);
+													OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
+												});
+											});
+											command.getSource().sendSuccess(new TranslatableComponent("commands.origin.gui.all", targets.size()), false);
+											return targets.size();
+										})
+										.then(argument("layer", LayerArgumentType.layer())
+												.executes((command) -> {
+													OriginLayer layer = LayerArgumentType.getLayer(command, "layer");
+													Collection<ServerPlayer> targets = EntityArgument.getPlayers(command, "targets");
+													targets.forEach(target -> {
+														IOriginContainer.get(target).ifPresent(container -> {
+															if (layer.enabled())
+																container.setOrigin(layer, Origin.EMPTY);
+															container.synchronize();
+															container.checkAutoChoosingLayers(false);
+															OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
+														});
+													});
+													command.getSource().sendSuccess(new TranslatableComponent("commands.origin.gui.layer", targets.size(), layer.name()), false);
+													return targets.size();
 												})
 										)
 								)
