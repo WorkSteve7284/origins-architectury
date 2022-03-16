@@ -3,13 +3,7 @@
   "modifiers": [
     {
       "name": "Extra Reach block reach",
-      "attribute": "reach-entity-attributes:reach",
-      "value": 1.5,
-      "operation": "addition"
-    },
-    {
-      "name": "Extra Reach entity reach",
-      "attribute": "reach-entity-attributes:attack_range",
+      "attribute": "forge:reach_distance",
       "value": 1.5,
       "operation": "addition"
     }

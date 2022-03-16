@@ -22,7 +22,7 @@ public abstract class WaterVisibilityMixin extends AbstractClientPlayer {
 		super(world, profile);
 	}
 
-	@Inject(at = @At("RETURN"), method = "getWaterVision", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "getWaterVision", cancellable = true)
 	private void getUnderwaterVisibility(CallbackInfoReturnable<Float> info) {
 		WaterVisionPower.getWaterVisionStrength(this).ifPresent(info::setReturnValue);
 	}

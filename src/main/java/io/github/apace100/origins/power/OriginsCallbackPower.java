@@ -6,6 +6,7 @@ import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import io.github.edwinmindcraft.origins.common.power.configuration.OriginsCallbackConfiguration;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfiguration> implements IOriginCallbackPower<OriginsCallbackConfiguration> {
 	public OriginsCallbackPower() {
@@ -13,27 +14,27 @@ public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfigurat
 	}
 
 	@Override
-	protected void onGained(OriginsCallbackConfiguration configuration, Entity player) {
+	protected void onGained(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionGained(), player);
 	}
 
 	@Override
-	protected void onLost(OriginsCallbackConfiguration configuration, Entity player) {
+	protected void onLost(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionLost(), player);
 	}
 
 	@Override
-	protected void onAdded(OriginsCallbackConfiguration configuration, Entity player) {
+	protected void onAdded(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionAdded(), player);
 	}
 
 	@Override
-	protected void onRemoved(OriginsCallbackConfiguration configuration, Entity player) {
+	protected void onRemoved(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRemoved(), player);
 	}
 
 	@Override
-	protected void onRespawn(OriginsCallbackConfiguration configuration, Entity player) {
+	protected void onRespawn(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity player) {
 		ConfiguredEntityAction.execute(configuration.entityActionRespawned(), player);
 	}
 

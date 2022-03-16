@@ -43,7 +43,7 @@ public class BadgeManager {
 		JsonElement data = event.getAdditionalData("badges");
 		ConfiguredPower<?, ?> power = event.getPower();
 		List<Badge> badges = new LinkedList<>();
-		if (!power.getData().hidden()) {
+		if (!power.getData().hidden() && !data.isJsonNull()) {
 			if (data.isJsonArray()) {
 				data.getAsJsonArray().forEach(badgeJson -> {
 					try {

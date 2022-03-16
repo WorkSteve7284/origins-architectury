@@ -8,6 +8,7 @@ import io.github.edwinmindcraft.origins.common.condition.configuration.OriginCon
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.NotNull;
 
 public class OriginCondition extends EntityCondition<OriginConfiguration> {
 	public OriginCondition() {
@@ -15,7 +16,7 @@ public class OriginCondition extends EntityCondition<OriginConfiguration> {
 	}
 
 	@Override
-	public boolean check(OriginConfiguration configuration, Entity entity) {
+	public boolean check(@NotNull OriginConfiguration configuration, @NotNull Entity entity) {
 		return IOriginContainer.get(entity).resolve().map(container -> {
 			if (configuration.layer() != null) {
 				OriginLayer layer = OriginsAPI.getLayersRegistry().get(configuration.layer());
