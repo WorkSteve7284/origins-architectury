@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import io.github.apace100.apoli.integration.PowerLoadEvent;
 import io.github.apace100.origins.Origins;
+import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.power.IActivePower;
 import io.github.edwinmindcraft.apoli.api.power.ITogglePower;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
@@ -69,6 +70,8 @@ public class BadgeManager {
 						break;
 				}
 			}
+			if(autoBadge != null) //Forgetting this is derp tier.
+				badges.add(autoBadge);
 		}
 		badges.forEach(x -> this.addBadge(id, x));
 	}
@@ -80,6 +83,7 @@ public class BadgeManager {
 	public BadgeManager() {
 		MinecraftForge.EVENT_BUS.addListener(this::onPowerLoad);
 		MinecraftForge.EVENT_BUS.addListener(this::onDynamicRegistryReload);
+		ApoliAPI.addAdditionalDataField("badges"); //Badges are a thing that exists.
 	}
 
 	public void clear() {
