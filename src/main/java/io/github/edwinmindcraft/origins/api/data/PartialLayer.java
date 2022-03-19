@@ -117,6 +117,7 @@ public record PartialLayer(@Nullable Integer order,
 			JsonUtils.getOptional(root, "auto_choose", GsonHelper::getAsBoolean).ifPresent(builder::autoChoose);
 			JsonUtils.getOptional(root, "replace_exclude_random", GsonHelper::getAsBoolean).ifPresent(builder::replaceExcludeRandom);
 			JsonUtils.getOptional(root, "hidden", GsonHelper::getAsBoolean).ifPresent(builder::hidden);
+			JsonUtils.getOptional(root, "loading_priority", GsonHelper::getAsInt).ifPresent(builder::loadingPriority);
 
 			builder.origins(JsonUtils.getOptionalList(root, "origins", (jsonElement, s) -> context.deserialize(jsonElement, ConditionedOrigin.class)));
 			builder.excludeRandom(JsonUtils.getIdentifierList(root, "exclude_random"));
@@ -143,6 +144,7 @@ public record PartialLayer(@Nullable Integer order,
 			if (origins.size() > 0) root.add("origins", origins);
 			JsonArray excludeRandom = src.excludeRandom().stream().map(x -> new JsonPrimitive(x.toString())).collect(JsonUtils.toJsonArray());
 			if (excludeRandom.size() > 0) root.add("exclude_random", excludeRandom);
+			if (src.loadingPriority() != 0) root.addProperty("loading_priority", src.loadingPriority());
 			return root;
 		}
 	}
@@ -232,7 +234,7 @@ public record PartialLayer(@Nullable Integer order,
 			return this;
 		}
 
-		public Builder hidden(Boolean autoChoose) {
+		public Builder hidden(Boolean hidden) {
 			this.hidden = hidden;
 			return this;
 		}
