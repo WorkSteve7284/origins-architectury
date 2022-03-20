@@ -44,7 +44,7 @@ public record ConditionedOrigin(
 	});
 
 	public static final Codec<ConditionedOrigin> CODEC = Codec.either(STRING_CODEC, LARGE_CODEC)
-			.xmap(e -> e.map(Function.identity(), Function.identity()), co -> co.origins().size() == 1 ? Either.left(co) : Either.right(co));
+			.xmap(e -> e.map(Function.identity(), Function.identity()), co -> co.origins().size() == 1 && co.condition() == null ? Either.left(co) : Either.right(co));
 
 	public Stream<ResourceLocation> stream(Player player) {
 		return ConfiguredEntityCondition.check(this.condition(), player) ? this.origins().stream() : Stream.empty();
