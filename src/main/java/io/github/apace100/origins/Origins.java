@@ -61,7 +61,7 @@ public class Origins {
 		OriginsCommon.initialize();
 		OriginsData.initialize();
 
-		DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> OriginsClient::initialize);
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> OriginsClient::initialize);
 		NamespaceAlias.addAlias("origins", "apoli");
 
 		CriteriaTriggers.register(ChoseOriginCriterion.INSTANCE);

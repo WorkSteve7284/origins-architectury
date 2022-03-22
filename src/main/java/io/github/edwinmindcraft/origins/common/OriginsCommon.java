@@ -7,6 +7,7 @@ import io.github.edwinmindcraft.origins.common.network.*;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -17,7 +18,7 @@ public class OriginsCommon {
 
 	public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(Origins.identifier("network"), () -> NETWORK_VERSION, NETWORK_VERSION::equals, NETWORK_VERSION::equals);
 
-	static {
+	private static void initializeNetwork() {
 		int message = 0;
 		CHANNEL.messageBuilder(S2CSynchronizeOrigin.class, message++, NetworkDirection.PLAY_TO_CLIENT)
 				.encoder(S2CSynchronizeOrigin::encode).decoder(S2CSynchronizeOrigin::decode)
@@ -47,9 +48,14 @@ public class OriginsCommon {
 		OriginRegisters.register();
 		OriginsPowerTypes.register();
 		mod.addListener(OriginsCommon::registerCapabilities);
+		mod.addListener(OriginsCommon::commonSetup);
 	}
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.register(IOriginContainer.class);
+	}
+
+	public static void commonSetup(FMLCommonSetupEvent event) {
+		initializeNetwork();
 	}
 }

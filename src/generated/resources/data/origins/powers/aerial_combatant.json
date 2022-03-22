@@ -2,7 +2,7 @@
   "modifier": {
     "name": "Extra damage while fall flying",
     "value": 1.0,
-    "operation": 1
+    "operation": "multiply_base"
   },
   "condition": {
     "type": "apoli:fall_flying"

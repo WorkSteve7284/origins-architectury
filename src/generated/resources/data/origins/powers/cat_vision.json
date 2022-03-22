@@ -1,0 +1,9 @@
+{
+  "strength": 0.4,
+  "condition": {
+    "fluid": "minecraft:water",
+    "inverted": true,
+    "type": "apoli:submerged_in"
+  },
+  "type": "apoli:night_vision"
+}

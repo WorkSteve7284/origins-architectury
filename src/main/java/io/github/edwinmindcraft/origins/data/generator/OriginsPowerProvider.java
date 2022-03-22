@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.origins.data.generator;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.origins.Origins;
@@ -139,6 +140,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 				ApoliItemConditions.FOOD.get().configure(NoConfiguration.INSTANCE),
 				ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(OriginsItemTags.IGNORE_DIET)), inverted));
 		this.add("carnivore", ApoliPowers.PREVENT_ITEM_USAGE.get().configure(FieldConfiguration.of(Optional.of(carnivore)), PowerData.DEFAULT));
+		this.add("cat_vision", ApoliPowers.NIGHT_VISION.get().configure(FieldConfiguration.of(0.4F), PowerData.builder().addCondition(ApoliEntityConditions.SUBMERGED_IN.get().configure(new TagConfiguration<>(FluidTags.WATER), inverted)).build()));
 
 	}
 }

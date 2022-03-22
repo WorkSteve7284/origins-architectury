@@ -1,33 +1,33 @@
 {
-  "type": "origins:prevent_item_use",
   "item_condition": {
-    "type": "origins:and",
     "conditions": [
       {
-        "type": "origins:or",
         "conditions": [
           {
-            "type": "origins:ingredient",
             "ingredient": {
               "tag": "origins:meat"
-            }
+            },
+            "type": "apoli:ingredient"
           },
           {
-            "type": "origins:meat"
+            "type": "apoli:meat"
           }
         ],
-        "inverted": true
+        "inverted": true,
+        "type": "apoli:or"
       },
       {
-        "type": "origins:food"
+        "type": "apoli:food"
       },
       {
-        "type": "origins:ingredient",
         "ingredient": {
           "tag": "origins:ignore_diet"
         },
-        "inverted": true
+        "inverted": true,
+        "type": "apoli:ingredient"
       }
-    ]
-  }
+    ],
+    "type": "apoli:and"
+  },
+  "type": "apoli:prevent_item_use"
 }

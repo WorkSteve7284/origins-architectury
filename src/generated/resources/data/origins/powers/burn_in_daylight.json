@@ -1,0 +1,17 @@
+{
+  "interval": 20,
+  "burn_duration": 6,
+  "condition": {
+    "conditions": [
+      {
+        "type": "apoli:exposed_to_sun"
+      },
+      {
+        "inverted": true,
+        "type": "apoli:invisible"
+      }
+    ],
+    "type": "apoli:and"
+  },
+  "type": "apoli:burn"
+}
