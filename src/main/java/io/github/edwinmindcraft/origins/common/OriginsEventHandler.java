@@ -24,6 +24,7 @@ import io.github.edwinmindcraft.origins.common.data.LayerLoader;
 import io.github.edwinmindcraft.origins.common.data.OriginLoader;
 import io.github.edwinmindcraft.origins.common.network.S2COpenOriginScreen;
 import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeBadges;
+import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeOrigin;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.particles.ParticleTypes;
@@ -92,6 +93,8 @@ public class OriginsEventHandler {
 	public static void onDataSync(OnDatapackSyncEvent event) {
 		PacketDistributor.PacketTarget target = event.getPlayer() == null ? PacketDistributor.ALL.noArg() : PacketDistributor.PLAYER.with(event::getPlayer);
 		OriginsCommon.CHANNEL.send(target, Origins.badgeManager.createPacket());
+		if (event.getPlayer() != null)
+			IOriginContainer.get(event.getPlayer()).map(IOriginContainer::getSynchronizationPacket).ifPresent(packet -> OriginsCommon.CHANNEL.send(target, packet));
 	}
 
 	@SubscribeEvent

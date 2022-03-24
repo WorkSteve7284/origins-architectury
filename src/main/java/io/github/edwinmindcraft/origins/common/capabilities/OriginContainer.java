@@ -1,6 +1,7 @@
 package io.github.edwinmindcraft.origins.common.capabilities;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.component.PlayerOriginComponent;
@@ -123,20 +124,24 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 			IPowerContainer.get(this.player).ifPresent(container -> {
 				for (Origin origin : this.layers.values()) {
 					ResourceLocation powerSource = OriginsAPI.getPowerSource(origin);
-					Set<ResourceLocation> powers = new HashSet<>(container.getPowersFromSource(powerSource));
+					Set<ResourceLocation> currentPowers = ImmutableSet.copyOf(container.getPowersFromSource(powerSource));
 					Registry<ConfiguredPower<?, ?>> registry = ApoliAPI.getPowers(this.player.getServer());
 
-					Set<ResourceLocation> originPowers = origin.getPowers().stream().map(registry::get).filter(Objects::nonNull).flatMap(x -> {
+					Set<ResourceLocation> newPowers = origin.getPowers().stream().map(registry::get).filter(Objects::nonNull).flatMap(x -> {
 						HashSet<ResourceLocation> names = new HashSet<>();
 						names.add(x.getRegistryName());
 						x.getChildren().stream().map(ConfiguredPower::getRegistryName).forEach(names::add);
 						return names.stream();
-					}).collect(Collectors.toSet());
-					originPowers.forEach(powers::remove);
-					//TODO Grant missing powers
-					if (!powers.isEmpty()) {
-						powers.forEach(power -> container.removePower(power, powerSource));
-						Origins.LOGGER.debug("CLEANUP: Revoked {} removed powers for origin {} on player {}", powers.size(), origin.getRegistryName(), this.player.getScoreboardName());
+					}).collect(ImmutableSet.toImmutableSet());
+					Set<ResourceLocation> toRemove = currentPowers.stream().filter(x -> !newPowers.contains(x)).collect(Collectors.toSet());
+					Set<ResourceLocation> toAdd = newPowers.stream().filter(x -> !currentPowers.contains(x)).collect(Collectors.toSet());
+					if (!toRemove.isEmpty()) {
+						toRemove.forEach(power -> container.removePower(power, powerSource));
+						Origins.LOGGER.debug("CLEANUP: Revoked {} removed powers for origin {} on player {}", toRemove.size(), origin.getRegistryName(), this.player.getScoreboardName());
+					}
+					if (!toAdd.isEmpty()) {
+						toAdd.forEach(power -> container.addPower(power, powerSource));
+						Origins.LOGGER.debug("CLEANUP: Granted {} missing powers for origin {} on player {}", toAdd.size(), origin.getRegistryName(), this.player.getScoreboardName());
 					}
 				}
 			});
