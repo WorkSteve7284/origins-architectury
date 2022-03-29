@@ -2,7 +2,6 @@ package io.github.edwinmindcraft.origins.data.generator;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.github.apace100.apoli.Apoli;
 import io.github.apace100.apoli.util.Comparison;
 import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.origins.Origins;
@@ -16,6 +15,7 @@ import io.github.edwinmindcraft.apoli.api.power.PowerData;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
 import io.github.edwinmindcraft.apoli.common.action.configuration.BlockConfiguration;
 import io.github.edwinmindcraft.apoli.common.action.meta.IfElseConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.EnchantmentConfiguration;
@@ -33,6 +33,8 @@ import io.github.edwinmindcraft.origins.common.power.configuration.NoSlowdownCon
 import io.github.edwinmindcraft.origins.common.power.configuration.WaterVisionConfiguration;
 import io.github.edwinmindcraft.origins.data.tag.OriginsBlockTags;
 import io.github.edwinmindcraft.origins.data.tag.OriginsItemTags;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.NonNullList;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.FluidTags;
@@ -69,12 +71,12 @@ public class OriginsPowerProvider extends PowerGenerator {
 								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.FLUID_HEIGHT.get().configure(new FluidTagComparisonConfiguration(new DoubleComparisonConfiguration(Comparison.GREATER_THAN, 0), FluidTags.WATER)),
-										ApoliEntityConditions.ON_BLOCK.get().configure(FieldConfiguration.of(Optional.empty()), new ConditionData(true))
+										ApoliEntityConditions.ON_BLOCK.get().configure(HolderConfiguration.defaultCondition(ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS), new ConditionData(true))
 								)).build()));
 		return builder.build();
 	}
 
-	private static Map<String, ConfiguredPower<?, ?>> makeMasterOfWebs() {
+	/*private static Map<String, ConfiguredPower<?, ?>> makeMasterOfWebs() {
 		ConfiguredBlockCondition<?, ?> inCobwebs = ApoliBlockConditions.IN_TAG.get().configure(new TagConfiguration<>(OriginsBlockTags.COBWEBS));
 
 		ImmutableMap.Builder<String, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
@@ -82,8 +84,8 @@ public class OriginsPowerProvider extends PowerGenerator {
 				new ConditionedCombatActionConfiguration(200, new HudRender(true, 5, Origins.identifier("textures/gui/resource_bar.png"), null, false), null, null,
 						ApoliEntityActions.BLOCK_ACTION_AT.get().configure(FieldConfiguration.of(
 								ApoliBlockActions.IF_ELSE.get().configure(new IfElseConfiguration<>(
-										ApoliBlockConditions.REPLACEABLE.get().configure(NoConfiguration.INSTANCE),
-										ApoliBlockActions.SET_BLOCK.get().configure(new BlockConfiguration(ModBlocks.TEMPORARY_COBWEB.get())),
+										Holder.direct(ApoliBlockConditions.REPLACEABLE.get().configure(NoConfiguration.INSTANCE)),
+										Holder.direct(ApoliBlockActions.SET_BLOCK.get().configure(new BlockConfiguration(ModBlocks.TEMPORARY_COBWEB.get()))),
 										null, ApoliBlockActions.PREDICATE, ApoliBlockActions.EXECUTOR))
 						))),
 				PowerData.DEFAULT));
@@ -106,7 +108,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 				new ShapelessRecipe(Origins.identifier("master_of_webs/web_crafting"), "", Items.COBWEB.getDefaultInstance(), NonNullList.of(Ingredient.of(Items.STRING), Ingredient.of(Items.STRING)))
 		), PowerData.DEFAULT));
 		return builder.build();
-	}
+	}*/
 
 	@Override
 	protected void populate() {
@@ -127,7 +129,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 
 
 		this.add("aerial_combatant", ApoliPowers.MODIFY_DAMAGE_DEALT.get().configure(new ModifyDamageDealtConfiguration(new AttributeModifier("Extra damage while fall flying", 1, AttributeModifier.Operation.MULTIPLY_BASE)), PowerData.builder().addCondition(ApoliEntityConditions.FALL_FLYING.get().configure(NoConfiguration.INSTANCE)).build()));
-		this.add("air_from_potions", ApoliPowers.ACTION_ON_ITEM_USE.get().configure(new ActionOnItemUseConfiguration(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(Items.POTION))), ApoliEntityActions.GAIN_AIR.get().configure(FieldConfiguration.of(60)), null), hidden));
+		this.add("air_from_potions", ApoliPowers.ACTION_ON_ITEM_USE.get().configure(new ActionOnItemUseConfiguration(Holder.direct(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(Items.POTION)))), Holder.direct(ApoliEntityActions.GAIN_AIR.get().configure(FieldConfiguration.of(60))), null), hidden));
 		this.add("aqua_affinity", ApoliPowers.MULTIPLE.get().configure(new MultipleConfiguration<>(makeAquaAffinity()), PowerData.DEFAULT));
 		this.add("aquatic", ApoliPowers.ENTITY_GROUP.get().configure(FieldConfiguration.of(MobType.WATER), hidden));
 		this.add("arcane_skin", ApoliPowers.MODEL_COLOR.get().configure(new ColorConfiguration(0.5F, 0.5F, 1.0F, 0.7F), PowerData.DEFAULT));
@@ -136,11 +138,10 @@ public class OriginsPowerProvider extends PowerGenerator {
 		this.add("burn_in_daylight", ApoliPowers.BURN.get().configure(new BurnConfiguration(20, 6), PowerData.builder().addCondition(ApoliEntityConditions.and(ApoliEntityConditions.EXPOSED_TO_SUN.get().configure(NoConfiguration.INSTANCE), ApoliEntityConditions.INVISIBLE.get().configure(NoConfiguration.INSTANCE, inverted))).build()));
 		this.add("burning_wrath", ApoliPowers.MODIFY_DAMAGE_DEALT.get().configure(new ModifyDamageDealtConfiguration(new AttributeModifier("Additional damage while on fire", 3, AttributeModifier.Operation.ADDITION)), PowerData.builder().addCondition(ApoliEntityConditions.ON_FIRE.get().configure(NoConfiguration.INSTANCE)).build()));
 		ConfiguredItemCondition<?, ?> carnivore = ApoliItemConditions.and(
-				ApoliItemConditions.OR.get().configure(ConditionStreamConfiguration.or(ImmutableList.of(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(OriginsItemTags.MEAT))), ApoliItemConditions.MEAT.get().configure(NoConfiguration.INSTANCE)), ApoliItemConditions.PREDICATE), inverted),
+				ApoliItemConditions.OR.get().configure(ConditionStreamConfiguration.or(ImmutableList.of(HolderSet.direct(Holder::direct, ImmutableList.of(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(OriginsItemTags.MEAT))), ApoliItemConditions.MEAT.get().configure(NoConfiguration.INSTANCE)))), ApoliItemConditions.PREDICATE), inverted),
 				ApoliItemConditions.FOOD.get().configure(NoConfiguration.INSTANCE),
 				ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(OriginsItemTags.IGNORE_DIET)), inverted));
 		this.add("carnivore", ApoliPowers.PREVENT_ITEM_USAGE.get().configure(FieldConfiguration.of(Optional.of(carnivore)), PowerData.DEFAULT));
 		this.add("cat_vision", ApoliPowers.NIGHT_VISION.get().configure(FieldConfiguration.of(0.4F), PowerData.builder().addCondition(ApoliEntityConditions.SUBMERGED_IN.get().configure(new TagConfiguration<>(FluidTags.WATER), inverted)).build()));
-
 	}
 }

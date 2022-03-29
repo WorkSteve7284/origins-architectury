@@ -15,6 +15,7 @@ import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -33,7 +34,7 @@ public enum LayerLoader implements DynamicEntryValidator<OriginLayer>, DynamicEn
 			try {
 				return Stream.of(GSON.fromJson(x, PartialLayer.class));
 			} catch (Exception e) {
-				Origins.LOGGER.error("There was a problem reading Origin layer file " + resourceLocation.toString() + " (skipping): " + e.getMessage());
+				Origins.LOGGER.error("There was a problem reading Origin layer file {} (skipping): {}: {}", resourceLocation, e.getClass(), e.getMessage(), e);
 				return Stream.empty();
 			}
 		}).sorted(PartialLayer.LOADING_COMPARATOR).reduce(PartialLayer::merge);

@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.origins.common;
 
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.power.OriginsPowerTypes;
+import io.github.apace100.origins.registry.ModLoot;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.common.network.*;
 import io.github.edwinmindcraft.origins.common.registry.OriginRegisters;
@@ -57,5 +58,6 @@ public class OriginsCommon {
 
 	public static void commonSetup(FMLCommonSetupEvent event) {
 		initializeNetwork();
+		event.enqueueWork(ModLoot::register);
 	}
 }

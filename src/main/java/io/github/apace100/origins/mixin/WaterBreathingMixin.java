@@ -3,6 +3,7 @@ package io.github.apace100.origins.mixin;
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -42,8 +43,8 @@ public final class WaterBreathingMixin {
 		@Inject(at = @At("TAIL"), method = "tick")
 		private void tick(CallbackInfo info) {}
 
-		@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isEyeInFluid(Lnet/minecraft/tags/Tag;)Z"), method = "turtleHelmetTick")
-		public boolean isSubmergedInProxy(Player player, Tag<Fluid> fluidTag) {
+		@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"), method = "turtleHelmetTick")
+		public boolean isSubmergedInProxy(Player player, TagKey<Fluid> fluidTag) {
 			boolean submerged = this.isEyeInFluid(fluidTag);
 			return IPowerContainer.hasPower(this, OriginsPowerTypes.WATER_BREATHING.get()) != submerged;
 		}
