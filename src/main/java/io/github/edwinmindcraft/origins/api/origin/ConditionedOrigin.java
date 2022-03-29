@@ -11,12 +11,16 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.apace100.calio.data.SerializableDataTypes;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityCondition;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
+import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.registry.OriginsDynamicRegistries;
+import net.minecraft.core.Holder;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -26,17 +30,17 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public record ConditionedOrigin(
-		@Nullable ConfiguredEntityCondition<?, ?> condition,
+		@NotNull Holder<ConfiguredEntityCondition<?, ?>> condition,
 		Set<ResourceLocation> origins) {
 
 	public static final Codec<ConditionedOrigin> LARGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			CalioCodecHelper.optionalField(ConfiguredEntityCondition.CODEC, "condition").forGetter(x -> Optional.ofNullable(x.condition())),
+			ConfiguredEntityCondition.optional("condition").forGetter(ConditionedOrigin::condition),
 			SerializableDataTypes.IDENTIFIERS.fieldOf("origins").forGetter(x -> ImmutableList.copyOf(x.origins()))
-	).apply(instance, (condition, origins) -> new ConditionedOrigin(condition.orElse(null), ImmutableSet.copyOf(origins))));
+	).apply(instance, (condition, origins) -> new ConditionedOrigin(condition, ImmutableSet.copyOf(origins))));
 
 	public static final Codec<ConditionedOrigin> STRING_CODEC = Codec.STRING.flatComapMap(s -> {
 		ResourceLocation resourceLocation = ResourceLocation.tryParse(s);
-		return new ConditionedOrigin(null, resourceLocation != null ? ImmutableSet.of(resourceLocation) : ImmutableSet.of());
+		return new ConditionedOrigin(ApoliBuiltinRegistries.CONFIGURED_ENTITY_CONDITIONS.get().getHolder(ApoliDynamicRegistries.CONDITION_DEFAULT).orElseThrow(), resourceLocation != null ? ImmutableSet.of(resourceLocation) : ImmutableSet.of());
 	}, co -> {
 		if (co.origins().size() != 1)
 			return DataResult.error("Invalid size: " + co.origins().size());
@@ -44,7 +48,7 @@ public record ConditionedOrigin(
 	});
 
 	public static final Codec<ConditionedOrigin> CODEC = Codec.either(STRING_CODEC, LARGE_CODEC)
-			.xmap(e -> e.map(Function.identity(), Function.identity()), co -> co.origins().size() == 1 && co.condition() == null ? Either.left(co) : Either.right(co));
+			.xmap(e -> e.map(Function.identity(), Function.identity()), co -> co.origins().size() == 1 && co.condition().is(ApoliDynamicRegistries.CONDITION_DEFAULT) ? Either.left(co) : Either.right(co));
 
 	public Stream<ResourceLocation> stream(Player player) {
 		return ConfiguredEntityCondition.check(this.condition(), player) ? this.origins().stream() : Stream.empty();

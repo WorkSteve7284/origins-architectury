@@ -55,7 +55,6 @@ public class Origins {
 		ModTags.register();
 		ModEnchantments.register();
 		ModEntities.register();
-		ModLoot.register();
 		Origin.init();
 
 		OriginsCommon.initialize();
