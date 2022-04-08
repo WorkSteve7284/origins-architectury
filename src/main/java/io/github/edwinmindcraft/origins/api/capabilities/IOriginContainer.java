@@ -63,7 +63,9 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	 * @return {@code false} if any layer is empty, {@code true otherwise}.
 	 */
 	default boolean hasAllOrigins() {
-		return OriginsAPI.getActiveLayers().stream().allMatch(this::hasOrigin);
+		return OriginsAPI.getActiveLayers().stream()
+				.filter(x -> !x.empty(this.getOwner())) //Check if the player is eligible to at least one origin.
+				.allMatch(this::hasOrigin);
 	}
 
 	/**

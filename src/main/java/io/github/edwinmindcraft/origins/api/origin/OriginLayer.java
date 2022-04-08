@@ -1,6 +1,5 @@
 package io.github.edwinmindcraft.origins.api.origin;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -31,7 +30,7 @@ public record OriginLayer(int order, ResourceLocation registryName,
 						  @Nullable ResourceLocation defaultOrigin,
 						  boolean autoChoose, boolean hidden) implements Comparable<OriginLayer> {
 
-	public static final Codec<OriginLayer> CODEC = RecordCodecBuilder.create(instance ->instance.group(
+	public static final Codec<OriginLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.fieldOf("order").forGetter(OriginLayer::order),
 			ResourceLocation.CODEC.fieldOf("registry_name").forGetter(OriginLayer::registryName),
 			CalioCodecHelper.setOf(ConditionedOrigin.CODEC).fieldOf("origins").forGetter(OriginLayer::conditionedOrigins),
@@ -72,6 +71,14 @@ public record OriginLayer(int order, ResourceLocation registryName,
 
 	public Set<ResourceLocation> origins(Player player) {
 		return this.conditionedOrigins().stream().flatMap(x -> x.stream(player)).collect(Collectors.toSet());
+	}
+
+	public boolean empty() {
+		return this.conditionedOrigins().stream().flatMap(ConditionedOrigin::stream).findAny().isEmpty();
+	}
+
+	public boolean empty(Player player) {
+		return this.conditionedOrigins().stream().flatMap(x -> x.stream(player)).findAny().isEmpty();
 	}
 
 	public List<ResourceLocation> randomOrigins(Player player) {

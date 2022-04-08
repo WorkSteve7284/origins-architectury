@@ -6,10 +6,12 @@ import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
+import io.github.edwinmindcraft.origins.common.OriginsCommon;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -49,10 +51,10 @@ public record C2SChooseRandomOrigin(ResourceLocation layer) {
 				container.setOrigin(layer, origin);
 				container.checkAutoChoosingLayers(false);
 				container.synchronize();
-				if (container.hasAllOrigins() && !hadAllOrigins) {
+				if (container.hasAllOrigins() && !hadAllOrigins)
 					OriginComponent.onChosen(sender, hadOriginBefore);
-				}
 				Origins.LOGGER.info("Player {} was randomly assigned the following Origin: \"{}\" for layer: {}", sender.getScoreboardName(), origin.getRegistryName(), this.layer());
+				OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CConfirmOrigin(this.layer(), origin.getRegistryName()));
 			});
 		});
 		contextSupplier.get().setPacketHandled(true);

@@ -58,8 +58,8 @@ public record C2SChooseOrigin(ResourceLocation layer, ResourceLocation origin) {
 						OriginComponent.onChosen(sender, hadOriginBefore);
 					}
 				}
-				OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CConfirmOrigin(this.layer(), this.origin()));
 				container.synchronize();
+				OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sender), new S2CConfirmOrigin(this.layer(), this.origin()));
 			});
 		});
 		contextSupplier.get().setPacketHandled(true);
