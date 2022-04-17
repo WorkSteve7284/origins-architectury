@@ -2,7 +2,6 @@ package io.github.apace100.origins.mixin;
 
 import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

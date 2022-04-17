@@ -34,10 +34,10 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 	private static final Comparator<Origin> COMPARATOR = Comparator.comparingInt((Origin a) -> a.getImpact().getImpactValue()).thenComparingInt(Origin::getOrder);
 
 	private final List<OriginLayer> layerList;
-	private int currentLayerIndex = 0;
+	private final int currentLayerIndex;
 	private int currentOrigin = 0;
 	private final List<Origin> originSelection;
-	private int maxSelection = 0;
+	private int maxSelection;
 
 	private Origin randomOrigin;
 
@@ -109,7 +109,10 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 		}));
 	}
 
+	@Override
 	protected Component getTitleText() {
+		if (this.getCurrentLayer().title().choose() != null)
+			return this.getCurrentLayer().title().choose();
 		return new TranslatableComponent(Origins.MODID + ".gui.choose_origin.title", this.getCurrentLayer().name());
 	}
 
@@ -121,11 +124,6 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 			return this.randomOrigin;
 		}
 		return this.originSelection.get(this.currentOrigin);
-	}
-
-	@Override
-	public OriginLayer getCurrentLayer() {
-		return this.layerList.get(this.currentLayerIndex);
 	}
 
 	private void initRandomOrigin() {

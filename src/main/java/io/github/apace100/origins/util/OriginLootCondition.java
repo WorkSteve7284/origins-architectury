@@ -12,13 +12,21 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class OriginLootCondition implements LootItemCondition {
 	private final ResourceLocation origin;
+	@Nullable
+	private final ResourceLocation layer;
 
 	private OriginLootCondition(ResourceLocation origin) {
+		this(origin, null);
+	}
+
+	private OriginLootCondition(ResourceLocation origin, @Nullable ResourceLocation layer) {
 		this.origin = origin;
+		this.layer = layer;
 	}
 
 	public LootItemConditionType getType() {
@@ -28,7 +36,10 @@ public class OriginLootCondition implements LootItemCondition {
 	public boolean test(LootContext lootContext) {
 		Entity entity = lootContext.getParamOrNull(LootContextParams.THIS_ENTITY);
 		if (entity == null) return false;
-		return IOriginContainer.get(entity).map(container -> container.getOrigins().values().stream().map(ForgeRegistryEntry::getRegistryName).anyMatch(this.origin::equals)).orElse(false);
+		return IOriginContainer.get(entity)
+				.map(container -> container
+						.getOrigins().entrySet().stream()
+						.anyMatch(entry -> (this.layer == null || this.layer.equals(entry.getKey().registryName())) && this.origin.equals(entry.getValue().getRegistryName()))).orElse(false);
 	}
 
 	public static LootItemCondition.Builder builder(String originId) {
@@ -39,13 +50,29 @@ public class OriginLootCondition implements LootItemCondition {
 		return () -> new OriginLootCondition(origin);
 	}
 
+	public static LootItemCondition.Builder builder(String originId, String layerId) {
+		return builder(new ResourceLocation(originId), new ResourceLocation(layerId));
+	}
+
+	public static LootItemCondition.Builder builder(ResourceLocation origin, ResourceLocation layer) {
+		return () -> new OriginLootCondition(origin, layer);
+	}
+
 	public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<OriginLootCondition> {
-		public void serialize(JsonObject jsonObject, OriginLootCondition originLootCondition, JsonSerializationContext context) {
+		public void serialize(JsonObject jsonObject, OriginLootCondition originLootCondition, @NotNull JsonSerializationContext jsonSerializationContext) {
 			jsonObject.addProperty("origin", originLootCondition.origin.toString());
+			if (originLootCondition.layer != null) {
+				jsonObject.addProperty("layer", originLootCondition.layer.toString());
+			}
 		}
 
-		public OriginLootCondition deserialize(JsonObject jsonObject, JsonDeserializationContext context) {
-			return new OriginLootCondition(new ResourceLocation(GsonHelper.getAsString(jsonObject, "origin")));
+		public @NotNull OriginLootCondition deserialize(@NotNull JsonObject jsonObject, @NotNull JsonDeserializationContext jsonDeserializationContext) {
+			ResourceLocation origin = new ResourceLocation(GsonHelper.getAsString(jsonObject, "origin"));
+			if (jsonObject.has("layer")) {
+				ResourceLocation layer = new ResourceLocation(GsonHelper.getAsString(jsonObject, "layer"));
+				return new OriginLootCondition(origin, layer);
+			}
+			return new OriginLootCondition(origin);
 		}
 	}
 }

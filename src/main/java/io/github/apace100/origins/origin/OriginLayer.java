@@ -36,6 +36,22 @@ public class OriginLayer implements Comparable<OriginLayer> {
 		return this.wrapped.missingDescription() instanceof TranslatableComponent tc ? tc.getKey() : "";
 	}
 
+	public String getTitleViewOriginTranslationKey() {
+		return this.wrapped.title().view() instanceof TranslatableComponent tc ? tc.getKey() : "";
+	}
+
+	public boolean shouldOverrideViewOriginTitle() {
+		return this.wrapped.title().view() != null;
+	}
+
+	public String getTitleChooseOriginTranslationKey() {
+		return this.wrapped.title().choose() instanceof TranslatableComponent tc ? tc.getKey() : "";
+	}
+
+	public boolean shouldOverrideChooseOriginTitle() {
+		return this.wrapped.title().choose() != null;
+	}
+
 	public ResourceLocation getIdentifier() {
 		return this.wrapped.registryName();
 	}
@@ -80,9 +96,9 @@ public class OriginLayer implements Comparable<OriginLayer> {
 		return this.wrapped.allowRandom();
 	}
 
-    public boolean isHidden() {
-        return this.wrapped.hidden();
-    }
+	public boolean isHidden() {
+		return this.wrapped.hidden();
+	}
 
 	public List<ResourceLocation> getRandomOrigins(Player playerEntity) {
 		return this.wrapped.randomOrigins(playerEntity);

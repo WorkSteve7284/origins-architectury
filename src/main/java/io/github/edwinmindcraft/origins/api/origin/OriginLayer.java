@@ -28,7 +28,8 @@ public record OriginLayer(int order, ResourceLocation registryName,
 						  boolean allowRandomUnchoosable,
 						  Set<ResourceLocation> randomExclusions,
 						  @Nullable ResourceLocation defaultOrigin,
-						  boolean autoChoose, boolean hidden) implements Comparable<OriginLayer> {
+						  boolean autoChoose, boolean hidden,
+						  GuiTitle title) implements Comparable<OriginLayer> {
 
 	public static final Codec<OriginLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.INT.fieldOf("order").forGetter(OriginLayer::order),
@@ -43,8 +44,17 @@ public record OriginLayer(int order, ResourceLocation registryName,
 			CalioCodecHelper.setOf(ResourceLocation.CODEC).fieldOf("random_exclusions").forGetter(OriginLayer::randomExclusions),
 			CalioCodecHelper.optionalField(ResourceLocation.CODEC, "default").forGetter(x -> Optional.ofNullable(x.defaultOrigin())),
 			Codec.BOOL.fieldOf("auto_choose").forGetter(OriginLayer::autoChoose),
-			CalioCodecHelper.optionalField(Codec.BOOL, "hidden", false).forGetter(OriginLayer::hidden)
-	).apply(instance, (Integer order1, ResourceLocation registryName1, Set<ConditionedOrigin> conditionedOrigins1, Boolean enabled1, Component name1, Component missingName1, Component missingDescription1, Boolean allowRandom1, Boolean allowRandomUnchoosable1, Set<ResourceLocation> randomExclusions1, Optional<ResourceLocation> defaultOrigin1, Boolean autoChoose1, Boolean hidden) -> new OriginLayer(order1, registryName1, conditionedOrigins1, enabled1, name1, missingName1, missingDescription1, allowRandom1, allowRandomUnchoosable1, randomExclusions1, defaultOrigin1.orElse(null), autoChoose1, hidden)));
+			CalioCodecHelper.optionalField(Codec.BOOL, "hidden", false).forGetter(OriginLayer::hidden),
+			CalioCodecHelper.optionalField(GuiTitle.CODEC, "gui_title", GuiTitle.DEFAULT).forGetter(OriginLayer::title)
+	).apply(instance, OriginLayer::new));
+
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	private OriginLayer(Integer order, ResourceLocation registryName, Set<ConditionedOrigin> conditionedOrigins,
+						Boolean enabled, Component name, Component missingName, Component missingDescription,
+						Boolean allowRandom, Boolean allowRandomUnchoosable, Set<ResourceLocation> randomExclusions,
+						Optional<ResourceLocation> defaultOrigin, Boolean autoChoose, Boolean hidden, GuiTitle title) {
+		this(order, registryName, conditionedOrigins, enabled, name, missingName, missingDescription, allowRandom, allowRandomUnchoosable, randomExclusions, defaultOrigin.orElse(null), autoChoose, hidden, title);
+	}
 
 	public OriginLayer cleanup(ICalioDynamicRegistryManager registries) {
 		Registry<Origin> registry = registries.get(OriginsDynamicRegistries.ORIGINS_REGISTRY);
@@ -57,7 +67,8 @@ public record OriginLayer(int order, ResourceLocation registryName,
 				this.randomExclusions().stream().filter(registry::containsKey).collect(ImmutableSet.toImmutableSet()),
 				this.defaultOrigin(),
 				this.autoChoose(),
-				this.hidden()
+				this.hidden(),
+				this.title()
 		);
 	}
 

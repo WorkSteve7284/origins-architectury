@@ -9,6 +9,7 @@ import io.github.apace100.origins.Origins;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryValidator;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
+import io.github.edwinmindcraft.origins.api.data.PartialGuiTitle;
 import io.github.edwinmindcraft.origins.api.data.PartialLayer;
 import io.github.edwinmindcraft.origins.api.origin.ConditionedOrigin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
@@ -25,6 +26,7 @@ public enum LayerLoader implements DynamicEntryValidator<OriginLayer>, DynamicEn
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
 			.registerTypeAdapter(PartialLayer.class, PartialLayer.Serializer.INSTANCE)
+			.registerTypeAdapter(PartialGuiTitle.class, PartialGuiTitle.Serializer.INSTANCE)
 			.registerTypeAdapter(ConditionedOrigin.class, ConditionedOrigin.Serializer.INSTANCE)
 			.create();
 

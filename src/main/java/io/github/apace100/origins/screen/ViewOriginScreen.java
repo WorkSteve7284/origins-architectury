@@ -103,6 +103,8 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 
 	@Override
 	protected Component getTitleText() {
+		if (this.getCurrentLayer().title().view() != null)
+			return this.getCurrentLayer().title().view();
 		return new TranslatableComponent(Origins.MODID + ".gui.view_origin.title", this.getCurrentLayer().name());
 	}
 }

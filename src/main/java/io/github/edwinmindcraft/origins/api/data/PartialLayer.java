@@ -5,7 +5,6 @@ import com.google.gson.*;
 import io.github.edwinmindcraft.origins.api.origin.ConditionedOrigin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import io.github.edwinmindcraft.origins.api.util.JsonUtils;
-import net.minecraft.ResourceLocationException;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -13,7 +12,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 public record PartialLayer(@Nullable Integer order,
 						   @NotNull Set<ConditionedOrigin> origins,
@@ -25,7 +27,8 @@ public record PartialLayer(@Nullable Integer order,
 						   boolean replaceExcludeRandom,
 						   @Nullable ResourceLocation defaultOrigin,
 						   @Nullable Boolean autoChoose, int loadingPriority,
-						   @Nullable Boolean hidden) {
+						   @Nullable Boolean hidden,
+						   @NotNull PartialGuiTitle title) {
 
 	public static Comparator<PartialLayer> LOADING_COMPARATOR = Comparator.comparingInt(PartialLayer::loadingPriority);
 
@@ -49,7 +52,8 @@ public record PartialLayer(@Nullable Integer order,
 				.excludeRandom(other.excludeRandom())
 				.defaultOrigin(other.defaultOrigin() != null ? other.defaultOrigin() : this.defaultOrigin())
 				.autoChoose(other.autoChoose() != null ? other.autoChoose() : this.autoChoose())
-				.hidden(other.hidden() != null ? other.hidden() : this.hidden());
+				.hidden(other.hidden() != null ? other.hidden() : this.hidden())
+				.title(this.title().merge(other.title()));
 		if (!other.replace()) builder.origins(this.origins());
 		if (!other.replaceExcludeRandom()) builder.excludeRandom(this.excludeRandom());
 		return builder.build();
@@ -69,31 +73,9 @@ public record PartialLayer(@Nullable Integer order,
 				ImmutableSet.copyOf(this.excludeRandom()),
 				this.defaultOrigin(),
 				this.autoChoose() != null ? this.autoChoose() : false,
-				this.hidden() != null ? this.hidden() : false
+				this.hidden() != null ? this.hidden() : false,
+				this.title().create(registryName)
 		);
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) return true;
-		if (obj == null || obj.getClass() != this.getClass()) return false;
-		var that = (PartialLayer) obj;
-		return Objects.equals(this.order, that.order) &&
-			   Objects.equals(this.origins, that.origins) &&
-			   Objects.equals(this.enabled, that.enabled) &&
-			   Objects.equals(this.replace, that.replace) &&
-			   Objects.equals(this.name, that.name) &&
-			   Objects.equals(this.missingName, that.missingName) &&
-			   Objects.equals(this.missingDescription, that.missingDescription) &&
-			   Objects.equals(this.allowRandom, that.allowRandom) &&
-			   Objects.equals(this.allowRandomUnchoosable, that.allowRandomUnchoosable) &&
-			   Objects.equals(this.excludeRandom, that.excludeRandom) &&
-			   Objects.equals(this.replaceExcludeRandom, that.replaceExcludeRandom) &&
-			   Objects.equals(this.defaultOrigin, that.defaultOrigin) &&
-			   Objects.equals(this.autoChoose, that.autoChoose) &&
-			   Objects.equals(this.hidden, that.hidden) &&
-			   this.loadingPriority == that.loadingPriority;
 	}
 
 	public static Builder builder() {return new Builder();}
@@ -118,6 +100,7 @@ public record PartialLayer(@Nullable Integer order,
 			JsonUtils.getOptional(root, "replace_exclude_random", GsonHelper::getAsBoolean).ifPresent(builder::replaceExcludeRandom);
 			JsonUtils.getOptional(root, "hidden", GsonHelper::getAsBoolean).ifPresent(builder::hidden);
 			JsonUtils.getOptional(root, "loading_priority", GsonHelper::getAsInt).ifPresent(builder::loadingPriority);
+			JsonUtils.getOptional(root, "gui_title", (jsonObject, s) -> context.<PartialGuiTitle>deserialize(jsonObject.get(s), PartialGuiTitle.class)).ifPresent(builder::title);
 
 			builder.origins(JsonUtils.getOptionalList(root, "origins", (jsonElement, s) -> context.deserialize(jsonElement, ConditionedOrigin.class)));
 			builder.excludeRandom(JsonUtils.getIdentifierList(root, "exclude_random"));
@@ -145,6 +128,7 @@ public record PartialLayer(@Nullable Integer order,
 			JsonArray excludeRandom = src.excludeRandom().stream().map(x -> new JsonPrimitive(x.toString())).collect(JsonUtils.toJsonArray());
 			if (excludeRandom.size() > 0) root.add("exclude_random", excludeRandom);
 			if (src.loadingPriority() != 0) root.addProperty("loading_priority", src.loadingPriority());
+			root.add("gui_title", context.serialize(src.title(), PartialGuiTitle.class));
 			return root;
 		}
 	}
@@ -166,6 +150,7 @@ public record PartialLayer(@Nullable Integer order,
 		private Boolean autoChoose;
 		private Boolean hidden;
 		private int loadingPriority;
+		private PartialGuiTitle title;
 
 		private Builder() {}
 
@@ -244,10 +229,15 @@ public record PartialLayer(@Nullable Integer order,
 			return this;
 		}
 
+		public Builder title(PartialGuiTitle title) {
+			this.title = title;
+			return this;
+		}
+
 		public PartialLayer build() {
 			return new PartialLayer(this.order, this.origins, this.enabled, this.replace, this.name,
 					this.missingName, this.missingDescription, this.allowRandom, this.allowRandomUnchoosable, this.excludeRandom,
-					this.replaceExcludeRandom, this.defaultOrigin, this.autoChoose, this.loadingPriority, this.hidden);
+					this.replaceExcludeRandom, this.defaultOrigin, this.autoChoose, this.loadingPriority, this.hidden, this.title);
 		}
 	}
 }
