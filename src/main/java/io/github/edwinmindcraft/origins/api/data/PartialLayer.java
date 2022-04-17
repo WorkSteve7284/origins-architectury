@@ -3,6 +3,7 @@ package io.github.edwinmindcraft.origins.api.data;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.*;
 import io.github.edwinmindcraft.origins.api.origin.ConditionedOrigin;
+import io.github.edwinmindcraft.origins.api.origin.GuiTitle;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import io.github.edwinmindcraft.origins.api.util.JsonUtils;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -28,7 +29,7 @@ public record PartialLayer(@Nullable Integer order,
 						   @Nullable ResourceLocation defaultOrigin,
 						   @Nullable Boolean autoChoose, int loadingPriority,
 						   @Nullable Boolean hidden,
-						   @NotNull PartialGuiTitle title) {
+						   @Nullable PartialGuiTitle title) {
 
 	public static Comparator<PartialLayer> LOADING_COMPARATOR = Comparator.comparingInt(PartialLayer::loadingPriority);
 
@@ -74,7 +75,7 @@ public record PartialLayer(@Nullable Integer order,
 				this.defaultOrigin(),
 				this.autoChoose() != null ? this.autoChoose() : false,
 				this.hidden() != null ? this.hidden() : false,
-				this.title().create(registryName)
+				this.title() != null ? this.title().create(registryName) : GuiTitle.DEFAULT
 		);
 	}
 
