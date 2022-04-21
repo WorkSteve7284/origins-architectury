@@ -2,6 +2,7 @@ package io.github.edwinmindcraft.origins.common.capabilities;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import io.github.apace100.calio.Calio;
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.component.OriginComponent;
 import io.github.apace100.origins.component.PlayerOriginComponent;
@@ -66,9 +67,8 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 					this.hadAllOrigins.set(true);
 			});
 			this.synchronize();
-			if(player instanceof ServerPlayer sp) {
+			if (this.player instanceof ServerPlayer sp)
 				ChoseOriginCriterion.INSTANCE.trigger(sp, origin);
-			}
 		}
 	}
 
@@ -111,7 +111,7 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	public boolean shouldSync() {
 		return this.synchronization.get();
 	}
-	
+
 	@Override
 	public @NotNull Player getOwner() {
 		return this.player;
@@ -235,26 +235,32 @@ public class OriginContainer implements IOriginContainer, ICapabilitySerializabl
 	}
 
 	public void acceptSynchronization(Map<ResourceLocation, ResourceLocation> map, boolean hadAllOrigins) {
+		this.layers.clear();
 		Registry<OriginLayer> layers = OriginsAPI.getLayersRegistry();
 		Registry<Origin> origins = OriginsAPI.getOriginsRegistry();
 		map.forEach((layer, origin) -> layers.getOptional(layer).ifPresent(l -> origins.getOptional(origin).ifPresent(o -> this.layers.put(l, o))));
 		this.hadAllOrigins.set(hadAllOrigins);
-
 	}
 
 	@Override
 	public Tag serializeNBT() {
 		Registry<OriginLayer> registry = OriginsAPI.getLayersRegistry();
+		Registry<Origin> origins = OriginsAPI.getOriginsRegistry();
 		CompoundTag tag = new CompoundTag();
 		CompoundTag layers = new CompoundTag();
 		this.getOrigins().forEach((layer, origin) -> {
-			ResourceLocation key = registry.getKey(layer);
+			ResourceLocation key = layer.getRegistryName();
 			ResourceLocation value = origin.getRegistryName();
-			if (key == null || value == null) return; //Sanity check for removed origins.
+			if (key == null || value == null) {
+				Origins.LOGGER.warn("Removed missing entry {} ({}): {} ({})", layer, key, origin, value);
+				return;
+			}
 			layers.putString(key.toString(), value.toString());
 		});
 		tag.put("Origins", layers);
 		tag.putBoolean("HadAllOrigins", this.hasAllOrigins());
+		if (Calio.isDebugMode())
+			Origins.LOGGER.info("NBT for player \"{}\": {}", this.getOwner().getDisplayName().getString(), tag);
 		return tag;
 	}
 

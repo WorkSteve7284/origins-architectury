@@ -3,7 +3,6 @@ package io.github.apace100.origins.util;
 import net.minecraft.world.inventory.MenuType;
 
 public enum InventoryType {
-
     THREE_BY_THREE(MenuType.GENERIC_3x3),
     NINE_BY_ONE(MenuType.GENERIC_9x1),
     NINE_BY_TWO(MenuType.GENERIC_9x2),
@@ -12,13 +11,13 @@ public enum InventoryType {
     NINE_BY_FIVE(MenuType.GENERIC_9x5),
     NINE_BY_SIX(MenuType.GENERIC_9x6);
 
-    private final MenuType type;
+    private final MenuType<?> type;
 
-    InventoryType(MenuType type) {
+    InventoryType(MenuType<?> type) {
         this.type = type;
     }
 
-    public MenuType getType() {
-        return type;
+    public MenuType<?> getType() {
+        return this.type;
     }
 }

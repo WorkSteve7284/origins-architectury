@@ -23,6 +23,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,12 +50,12 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 		Player player = Minecraft.getInstance().player;
 		OriginLayer currentLayer = layerList.get(currentLayerIndex);
 		Registry<Origin> originsRegistry = OriginsAPI.getOriginsRegistry();
-		currentLayer.origins(player).forEach(originId -> {
+		currentLayer.origins(Objects.requireNonNull(player)).forEach(originId -> {
 			Origin origin = originsRegistry.get(originId);
 			if (origin != null && origin.isChoosable()) {
 				ItemStack displayItem = origin.getIcon().copy();
 				if (displayItem.getItem() == Items.PLAYER_HEAD) {
-					if (!displayItem.hasTag() || !displayItem.getTag().contains("SkullOwner")) {
+					if (!displayItem.hasTag() || !Objects.requireNonNull(displayItem.getTag()).contains("SkullOwner")) {
 						displayItem.getOrCreateTag().putString("SkullOwner", player.getDisplayName().getString());
 					}
 				}
@@ -130,13 +131,13 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 		Registry<Origin> registry = OriginsAPI.getOriginsRegistry();
 		this.randomOrigin = PartialOrigin.builder().icon(new ItemStack(ModItems.ORB_OF_ORIGIN.get())).impact(Impact.NONE).order(Integer.MAX_VALUE).loadingOrder(Integer.MAX_VALUE).build().create(Origins.identifier("random"));
 		MutableComponent text = new TextComponent("");
-		List<Origin> randoms = this.layerList.get(this.currentLayerIndex).randomOrigins(Minecraft.getInstance().player).stream().map(registry::get).filter(Objects::nonNull).sorted(COMPARATOR).toList();
+		List<Origin> randoms = this.layerList.get(this.currentLayerIndex).randomOrigins(Objects.requireNonNull(Minecraft.getInstance().player)).stream().map(registry::get).filter(Objects::nonNull).sorted(COMPARATOR).toList();
 		randoms.forEach(x -> text.append(x.getName()).append("\n"));
 		this.setRandomOriginText(text);
 	}
 
 	@Override
-	public void renderBackground(PoseStack matrices, int vOffset) {
+	public void renderBackground(@NotNull PoseStack matrices, int vOffset) {
 		if (this.showDirtBackground) {
 			super.renderDirtBackground(vOffset);
 		} else {
@@ -145,7 +146,7 @@ public class ChooseOriginScreen extends OriginDisplayScreen {
 	}
 
 	@Override
-	public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(@NotNull PoseStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.maxSelection == 0) {
 			this.openNextLayerScreen();
 			return;

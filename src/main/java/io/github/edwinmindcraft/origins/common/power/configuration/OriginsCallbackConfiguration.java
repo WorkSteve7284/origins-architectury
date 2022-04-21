@@ -6,9 +6,6 @@ import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredEntityAction;
 import io.github.edwinmindcraft.calio.api.network.CalioCodecHelper;
 import net.minecraft.core.Holder;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 public record OriginsCallbackConfiguration(Holder<ConfiguredEntityAction<?, ?>> entityActionRespawned,
 										   Holder<ConfiguredEntityAction<?, ?>> entityActionRemoved,

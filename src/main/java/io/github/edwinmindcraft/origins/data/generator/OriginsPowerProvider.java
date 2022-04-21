@@ -3,10 +3,8 @@ package io.github.edwinmindcraft.origins.data.generator;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.apace100.apoli.util.Comparison;
-import io.github.apace100.apoli.util.HudRender;
 import io.github.apace100.origins.Origins;
 import io.github.apace100.origins.power.OriginsPowerTypes;
-import io.github.apace100.origins.registry.ModBlocks;
 import io.github.edwinmindcraft.apoli.api.configuration.*;
 import io.github.edwinmindcraft.apoli.api.generator.PowerGenerator;
 import io.github.edwinmindcraft.apoli.api.power.ConditionData;
@@ -16,17 +14,14 @@ import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredBlockCon
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredItemCondition;
 import io.github.edwinmindcraft.apoli.api.power.configuration.ConfiguredPower;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliBuiltinRegistries;
-import io.github.edwinmindcraft.apoli.common.action.configuration.BlockConfiguration;
-import io.github.edwinmindcraft.apoli.common.action.meta.IfElseConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.EnchantmentConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.configuration.FluidTagComparisonConfiguration;
-import io.github.edwinmindcraft.apoli.common.condition.configuration.InBlockAnywhereConfiguration;
 import io.github.edwinmindcraft.apoli.common.condition.meta.ConditionStreamConfiguration;
 import io.github.edwinmindcraft.apoli.common.power.configuration.*;
 import io.github.edwinmindcraft.apoli.common.registry.ApoliPowers;
-import io.github.edwinmindcraft.apoli.common.registry.action.ApoliBlockActions;
+import io.github.edwinmindcraft.apoli.common.registry.action.ApoliDefaultActions;
 import io.github.edwinmindcraft.apoli.common.registry.action.ApoliEntityActions;
-import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliBlockConditions;
+import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliDefaultConditions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliEntityConditions;
 import io.github.edwinmindcraft.apoli.common.registry.condition.ApoliItemConditions;
 import io.github.edwinmindcraft.origins.common.power.configuration.NoSlowdownConfiguration;
@@ -35,14 +30,12 @@ import io.github.edwinmindcraft.origins.data.tag.OriginsBlockTags;
 import io.github.edwinmindcraft.origins.data.tag.OriginsItemTags;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.NonNullList;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.MobType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -57,10 +50,11 @@ public class OriginsPowerProvider extends PowerGenerator {
 
 	private static Map<String, ConfiguredPower<?, ?>> makeAquaAffinity() {
 		ImmutableMap.Builder<String, ConfiguredPower<?, ?>> builder = ImmutableMap.builder();
+		Holder<ConfiguredBlockCondition<?, ?>> allow = ApoliDefaultConditions.BLOCK_DEFAULT.getHolder().orElseThrow(RuntimeException::new);
 		builder.put("underwater",
 				ApoliPowers.MODIFY_BREAK_SPEED.get()
 						.configure(
-								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
+								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), allow),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.SUBMERGED_IN.get().configure(new TagConfiguration<>(FluidTags.WATER)),
 										ApoliEntityConditions.ENCHANTMENT.get().configure(new EnchantmentConfiguration(new IntegerComparisonConfiguration(Comparison.EQUAL, 0), Enchantments.AQUA_AFFINITY, EnchantmentConfiguration.Calculation.SUM))
@@ -68,7 +62,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 		builder.put("ungrounded",
 				ApoliPowers.MODIFY_BREAK_SPEED.get()
 						.configure(
-								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), null),
+								new ModifyValueBlockConfiguration(ListConfiguration.of(new AttributeModifier(UUID.randomUUID(), "Unnamed attribute modifier", 4, AttributeModifier.Operation.MULTIPLY_TOTAL)), allow),
 								PowerData.builder().addCondition(ApoliEntityConditions.and(
 										ApoliEntityConditions.FLUID_HEIGHT.get().configure(new FluidTagComparisonConfiguration(new DoubleComparisonConfiguration(Comparison.GREATER_THAN, 0), FluidTags.WATER)),
 										ApoliEntityConditions.ON_BLOCK.get().configure(HolderConfiguration.defaultCondition(ApoliBuiltinRegistries.CONFIGURED_BLOCK_CONDITIONS), new ConditionData(true))
@@ -129,7 +123,7 @@ public class OriginsPowerProvider extends PowerGenerator {
 
 
 		this.add("aerial_combatant", ApoliPowers.MODIFY_DAMAGE_DEALT.get().configure(new ModifyDamageDealtConfiguration(new AttributeModifier("Extra damage while fall flying", 1, AttributeModifier.Operation.MULTIPLY_BASE)), PowerData.builder().addCondition(ApoliEntityConditions.FALL_FLYING.get().configure(NoConfiguration.INSTANCE)).build()));
-		this.add("air_from_potions", ApoliPowers.ACTION_ON_ITEM_USE.get().configure(new ActionOnItemUseConfiguration(Holder.direct(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(Items.POTION)))), Holder.direct(ApoliEntityActions.GAIN_AIR.get().configure(FieldConfiguration.of(60))), null), hidden));
+		this.add("air_from_potions", ApoliPowers.ACTION_ON_ITEM_USE.get().configure(new ActionOnItemUseConfiguration(Holder.direct(ApoliItemConditions.INGREDIENT.get().configure(FieldConfiguration.of(Ingredient.of(Items.POTION)))), Holder.direct(ApoliEntityActions.GAIN_AIR.get().configure(FieldConfiguration.of(60))), ApoliDefaultActions.ITEM_DEFAULT.getHolder().orElseThrow(RuntimeException::new)), hidden));
 		this.add("aqua_affinity", ApoliPowers.MULTIPLE.get().configure(new MultipleConfiguration<>(makeAquaAffinity()), PowerData.DEFAULT));
 		this.add("aquatic", ApoliPowers.ENTITY_GROUP.get().configure(FieldConfiguration.of(MobType.WATER), hidden));
 		this.add("arcane_skin", ApoliPowers.MODEL_COLOR.get().configure(new ColorConfiguration(0.5F, 0.5F, 1.0F, 0.7F), PowerData.DEFAULT));

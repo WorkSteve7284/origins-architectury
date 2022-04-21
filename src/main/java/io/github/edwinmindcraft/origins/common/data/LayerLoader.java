@@ -3,7 +3,6 @@ package io.github.edwinmindcraft.origins.common.data;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.mojang.serialization.DataResult;
 import io.github.apace100.origins.Origins;
 import io.github.edwinmindcraft.calio.api.registry.DynamicEntryFactory;
@@ -16,7 +15,6 @@ import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;

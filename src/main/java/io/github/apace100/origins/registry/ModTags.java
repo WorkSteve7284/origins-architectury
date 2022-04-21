@@ -2,7 +2,6 @@ package io.github.apace100.origins.registry;
 
 import io.github.edwinmindcraft.origins.data.tag.OriginsBlockTags;
 import io.github.edwinmindcraft.origins.data.tag.OriginsItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;

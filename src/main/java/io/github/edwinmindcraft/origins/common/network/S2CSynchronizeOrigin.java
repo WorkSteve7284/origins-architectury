@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.client.OriginsClientUtils;
 import io.github.edwinmindcraft.origins.common.capabilities.OriginContainer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;

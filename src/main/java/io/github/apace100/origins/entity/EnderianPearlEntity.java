@@ -3,7 +3,6 @@ package io.github.apace100.origins.entity;
 import io.github.apace100.origins.registry.ModEntities;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -45,13 +44,13 @@ public class EnderianPearlEntity extends ThrownEnderpearl {
 	}
 
 	protected void onHit(HitResult result) {
-		HitResult.Type hitresult$type = result.getType();
-		if (hitresult$type == HitResult.Type.ENTITY)
+		HitResult.Type type = result.getType();
+		if (type == HitResult.Type.ENTITY)
 			this.onHitEntity((EntityHitResult) result);
-		else if (hitresult$type == HitResult.Type.BLOCK)
+		else if (type == HitResult.Type.BLOCK)
 			this.onHitBlock((BlockHitResult) result);
 
-		if (hitresult$type != HitResult.Type.MISS)
+		if (type != HitResult.Type.MISS)
 			this.gameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
 
 

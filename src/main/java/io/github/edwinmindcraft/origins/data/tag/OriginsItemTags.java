@@ -10,7 +10,7 @@ public class OriginsItemTags {
 		return ItemTags.create(Origins.identifier(path));
 	}
 
-	public static TagKey<Item> MEAT = tag("meat");
-	public static TagKey<Item> IGNORE_DIET = tag("ignore_diet");
-	public static TagKey<Item> RANGED_WEAPONS = tag("ranged_weapons");
+	public static final TagKey<Item> MEAT = tag("meat");
+	public static final TagKey<Item> IGNORE_DIET = tag("ignore_diet");
+	public static final TagKey<Item> RANGED_WEAPONS = tag("ranged_weapons");
 }

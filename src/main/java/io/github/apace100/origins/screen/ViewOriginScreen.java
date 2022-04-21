@@ -16,10 +16,12 @@ import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Objects;
 
 public class ViewOriginScreen extends OriginDisplayScreen {
 
@@ -29,14 +31,14 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 
 	public ViewOriginScreen() {
 		super(new TranslatableComponent(Origins.MODID + ".screen.view_origin"), false);
-		Player player = Minecraft.getInstance().player;
+		Player player = Objects.requireNonNull(Minecraft.getInstance().player);
 		Map<OriginLayer, Origin> origins = IOriginContainer.get(player).map(IOriginContainer::getOrigins).orElseGet(ImmutableMap::of);
 		this.originLayers = new ArrayList<>(origins.size());
 
 		origins.forEach((layer, origin) -> {
 			ItemStack displayItem = origin.getIcon().copy();
 			if (displayItem.getItem() == Items.PLAYER_HEAD) {
-				if (!displayItem.hasTag() || !displayItem.getTag().contains("SkullOwner")) {
+				if (!displayItem.hasTag() || !Objects.requireNonNull(displayItem.getTag()).contains("SkullOwner")) {
 					displayItem.getOrCreateTag().putString("SkullOwner", player.getDisplayName().getString());
 				}
 			}
@@ -64,33 +66,32 @@ public class ViewOriginScreen extends OriginDisplayScreen {
 		this.guiLeft = (this.width - windowWidth) / 2;
 		this.guiTop = (this.height - windowHeight) / 2;
 		if (this.originLayers.size() > 0) {
-			this.addRenderableWidget(this.chooseOriginButton = new Button(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight - 40, 100, 20, new TranslatableComponent(Origins.MODID + ".gui.choose"), b -> {
-				Minecraft.getInstance().setScreen(new ChooseOriginScreen(Lists.newArrayList(this.originLayers.get(this.currentLayer).getA()), 0, false));
-			}));
-			Player player = Minecraft.getInstance().player;
+			this.addRenderableWidget(this.chooseOriginButton = new Button(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight - 40, 100, 20, new TranslatableComponent(Origins.MODID + ".gui.choose"), b ->
+					Minecraft.getInstance().setScreen(new ChooseOriginScreen(Lists.newArrayList(this.originLayers.get(this.currentLayer).getA()), 0, false))));
+			Player player = Objects.requireNonNull(Minecraft.getInstance().player);
 			this.chooseOriginButton.active = this.chooseOriginButton.visible = this.originLayers.get(this.currentLayer).getB() == Origin.EMPTY && this.originLayers.get(this.currentLayer).getA().getOriginOptionCount(player) > 0;
 			if (this.originLayers.size() > 1) {
 				this.addRenderableWidget(new Button(this.guiLeft - 40, this.height / 2 - 10, 20, 20, new TextComponent("<"), b -> {
 					this.currentLayer = (this.currentLayer - 1 + this.originLayers.size()) % this.originLayers.size();
-					Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
-					this.showOrigin(current.getB(), current.getA(), false);
-					this.chooseOriginButton.active = this.chooseOriginButton.visible = current.getB() == Origin.EMPTY && current.getA().getOriginOptionCount(player) > 0;
+					this.switchLayer(player);
 				}));
 				this.addRenderableWidget(new Button(this.guiLeft + windowWidth + 20, this.height / 2 - 10, 20, 20, new TextComponent(">"), b -> {
 					this.currentLayer = (this.currentLayer + 1) % this.originLayers.size();
-					Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
-					this.showOrigin(current.getB(), current.getA(), false);
-					this.chooseOriginButton.active = this.chooseOriginButton.visible = current.getB() == Origin.EMPTY && current.getA().getOriginOptionCount(player) > 0;
+					this.switchLayer(player);
 				}));
 			}
 		}
-		this.addRenderableWidget(new Button(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight + 5, 100, 20, new TranslatableComponent(Origins.MODID + ".gui.close"), b -> {
-			Minecraft.getInstance().setScreen(null);
-		}));
+		this.addRenderableWidget(new Button(this.guiLeft + windowWidth / 2 - 50, this.guiTop + windowHeight + 5, 100, 20, new TranslatableComponent(Origins.MODID + ".gui.close"), b -> Minecraft.getInstance().setScreen(null)));
+	}
+
+	private void switchLayer(Player player) {
+		Tuple<OriginLayer, Origin> current = this.originLayers.get(this.currentLayer);
+		this.showOrigin(current.getB(), current.getA(), false);
+		this.chooseOriginButton.active = this.chooseOriginButton.visible = current.getB() == Origin.EMPTY && current.getA().getOriginOptionCount(player) > 0;
 	}
 
 	@Override
-	public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(@NotNull PoseStack matrices, int mouseX, int mouseY, float delta) {
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.originLayers.size() == 0) {
 			//if(OriginsClient.isServerRunningOrigins) {

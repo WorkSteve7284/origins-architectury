@@ -7,6 +7,8 @@ import io.github.apace100.origins.origin.OriginRegistry;
 import io.github.edwinmindcraft.origins.api.capabilities.IOriginContainer;
 import java.util.HashMap;
 
+
+@SuppressWarnings("deprecation")
 public class PlayerOriginComponent implements OriginComponent {
 
 	private final IOriginContainer wrapped;
@@ -141,7 +143,7 @@ public class PlayerOriginComponent implements OriginComponent {
                             try {
                                 powerComponent.getPower(type).fromTag(data);
                             } catch(ClassCastException e) {
-                                // Occurs when power was overriden by data pack since last world load
+                                // Occurs when power was overridden by data pack since last world load
                                 // to be a power type which uses different data class.
                                 Origins.LOGGER.warn("Data type of \"" + powerTypeId + "\" changed, skipping data for that power on player " + player.getName().getContents());
                             }

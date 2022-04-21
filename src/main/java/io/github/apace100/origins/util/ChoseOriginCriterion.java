@@ -14,12 +14,12 @@ import java.util.Objects;
 
 public class ChoseOriginCriterion extends SimpleCriterionTrigger<ChoseOriginCriterion.Conditions> {
 
-	public static ChoseOriginCriterion INSTANCE = new ChoseOriginCriterion();
+	public static final ChoseOriginCriterion INSTANCE = new ChoseOriginCriterion();
 
 	private static final ResourceLocation ID = new ResourceLocation(Origins.MODID, "chose_origin");
 
 	@Override
-	protected Conditions createInstance(JsonObject obj, EntityPredicate.Composite playerPredicate, DeserializationContext predicateDeserializer) {
+	protected @NotNull Conditions createInstance(@NotNull JsonObject obj, EntityPredicate.@NotNull Composite playerPredicate, @NotNull DeserializationContext predicateDeserializer) {
 		ResourceLocation id = ResourceLocation.tryParse(GsonHelper.getAsString(obj, "origin"));
 		return new Conditions(playerPredicate, id);
 	}
@@ -29,7 +29,7 @@ public class ChoseOriginCriterion extends SimpleCriterionTrigger<ChoseOriginCrit
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public @NotNull ResourceLocation getId() {
 		return ID;
 	}
 

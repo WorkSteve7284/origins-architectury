@@ -29,7 +29,7 @@ public class OriginLootCondition implements LootItemCondition {
 		this.layer = layer;
 	}
 
-	public LootItemConditionType getType() {
+	public @NotNull LootItemConditionType getType() {
 		return ModLoot.ORIGIN_LOOT_CONDITION;
 	}
 
@@ -39,7 +39,7 @@ public class OriginLootCondition implements LootItemCondition {
 		return IOriginContainer.get(entity)
 				.map(container -> container
 						.getOrigins().entrySet().stream()
-						.anyMatch(entry -> (this.layer == null || this.layer.equals(entry.getKey().registryName())) && this.origin.equals(entry.getValue().getRegistryName()))).orElse(false);
+						.anyMatch(entry -> (this.layer == null || this.layer.equals(entry.getKey().getRegistryName())) && this.origin.equals(entry.getValue().getRegistryName()))).orElse(false);
 	}
 
 	public static LootItemCondition.Builder builder(String originId) {

@@ -1,32 +1,29 @@
 package io.github.edwinmindcraft.origins.api.capabilities;
 
 import io.github.apace100.origins.component.OriginComponent;
-import io.github.apace100.origins.power.OriginsCallbackPower;
-import io.github.edwinmindcraft.apoli.api.ApoliAPI;
 import io.github.edwinmindcraft.apoli.api.IDynamicFeatureConfiguration;
-import io.github.edwinmindcraft.apoli.common.network.S2CSynchronizePowerContainer;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import io.github.edwinmindcraft.origins.api.origin.Origin;
 import io.github.edwinmindcraft.origins.api.origin.OriginLayer;
 import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeOrigin;
-import net.minecraft.core.Registry;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.INBTSerializable;
-import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.common.util.LazyOptional;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public interface IOriginContainer extends INBTSerializable<Tag> {
+	/**
+	 * A shorthand to access the container for a given entity.
+	 *
+	 * @param entity The entity to access the container of.
+	 *
+	 * @return A lazy optional that may contain the container if applicable.
+	 */
 	static LazyOptional<IOriginContainer> get(@Nullable Entity entity) {
 		return entity != null ? entity.getCapability(OriginsAPI.ORIGIN_CONTAINER) : LazyOptional.empty();
 	}
@@ -88,29 +85,59 @@ public interface IOriginContainer extends INBTSerializable<Tag> {
 	 */
 	boolean shouldSync();
 
+	/**
+	 * Runs a tick of this container. This is used for synchronisation and cleanup purposes
+	 */
 	void tick();
 
+	/**
+	 * Returns the packet used to synchronize origins with the client.
+	 *
+	 * @return The generated {@link S2CSynchronizeOrigin} packet.
+	 */
 	S2CSynchronizeOrigin getSynchronizationPacket();
 
+	/**
+	 * Checks and applies layers with an automatic origin present.
+	 *
+	 * @param includeDefaults Should the default origins also be applied.
+	 *
+	 * @return {@code true} if an origin was set, {@code false} otherwise.
+	 */
 	boolean checkAutoChoosingLayers(boolean includeDefaults);
 
 	/**
 	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, Entity, boolean)} on powers associated
 	 * with the given origin.
+	 *
 	 * @param origin The origin to trigger onChosen for.
-	 * @param isOrb If first pick actions should be triggered.
+	 * @param isOrb  If first pick actions should be triggered.
 	 */
 	void onChosen(Origin origin, boolean isOrb);
 
 	/**
 	 * Executes {@link IOriginCallbackPower#onChosen(IDynamicFeatureConfiguration, Entity, boolean)} on all powers.
+	 *
 	 * @param isOrb If first pick actions should be triggered.
 	 */
 	void onChosen(boolean isOrb);
 
+	/**
+	 * Called when the datapacks are finished reloading.
+	 */
 	void onReload();
 
+	/**
+	 * Converts this component into a fabric compatible one.
+	 *
+	 * @return The fabric compatible version of this component.
+	 */
 	OriginComponent asLegacyComponent();
-	
+
+	/**
+	 * Accessor for the player that owns this container.
+	 *
+	 * @return The owner of this container.
+	 */
 	Player getOwner();
 }

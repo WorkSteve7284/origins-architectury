@@ -70,7 +70,7 @@ public class BadgeManager {
 						break;
 				}
 			}
-			if(autoBadge != null) //Forgetting this is derp tier.
+			if(autoBadge != null)
 				badges.add(autoBadge);
 		}
 		badges.forEach(x -> this.addBadge(id, x));

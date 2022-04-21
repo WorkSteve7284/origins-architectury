@@ -9,6 +9,7 @@ import io.github.edwinmindcraft.origins.api.util.JsonUtils;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +32,7 @@ public record PartialLayer(@Nullable Integer order,
 						   @Nullable Boolean hidden,
 						   @Nullable PartialGuiTitle title) {
 
-	public static Comparator<PartialLayer> LOADING_COMPARATOR = Comparator.comparingInt(PartialLayer::loadingPriority);
+	public static final Comparator<PartialLayer> LOADING_COMPARATOR = Comparator.comparingInt(PartialLayer::loadingPriority);
 
 	/**
 	 * Applies data for the given {@link PartialLayer} to this layer.
@@ -54,7 +55,7 @@ public record PartialLayer(@Nullable Integer order,
 				.defaultOrigin(other.defaultOrigin() != null ? other.defaultOrigin() : this.defaultOrigin())
 				.autoChoose(other.autoChoose() != null ? other.autoChoose() : this.autoChoose())
 				.hidden(other.hidden() != null ? other.hidden() : this.hidden())
-				.title(this.title().merge(other.title()));
+				.title(PartialGuiTitle.merge(this.title(), other.title()));
 		if (!other.replace()) builder.origins(this.origins());
 		if (!other.replaceExcludeRandom()) builder.excludeRandom(this.excludeRandom());
 		return builder.build();
@@ -98,7 +99,7 @@ public record PartialLayer(@Nullable Integer order,
 			JsonUtils.getOptional(root, "allow_random_unchoosable", GsonHelper::getAsBoolean).ifPresent(builder::allowRandomUnchoosable);
 			JsonUtils.getOptional(root, "default_origin", GsonHelper::getAsString).map(JsonUtils.rethrow(ResourceLocation::new, "\"default_origin\" isn't a valid identifier")).ifPresent(builder::defaultOrigin);
 			JsonUtils.getOptional(root, "auto_choose", GsonHelper::getAsBoolean).ifPresent(builder::autoChoose);
-			JsonUtils.getOptional(root, "replace_exclude_random", GsonHelper::getAsBoolean).ifPresent(builder::replaceExcludeRandom);
+			JsonUtils.getOptional(root, "replace_exclude_random", GsonHelper::getAsBoolean).ifPresent(x -> builder.replaceExcludeRandom(x.booleanValue()));
 			JsonUtils.getOptional(root, "hidden", GsonHelper::getAsBoolean).ifPresent(builder::hidden);
 			JsonUtils.getOptional(root, "loading_priority", GsonHelper::getAsInt).ifPresent(builder::loadingPriority);
 			JsonUtils.getOptional(root, "gui_title", (jsonObject, s) -> context.<PartialGuiTitle>deserialize(jsonObject.get(s), PartialGuiTitle.class)).ifPresent(builder::title);
@@ -155,82 +156,108 @@ public record PartialLayer(@Nullable Integer order,
 
 		private Builder() {}
 
-		public Builder order(Integer order) {
+		@Contract("_ -> this")
+		public Builder order(@Nullable Integer order) {
 			this.order = order;
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder origins(Collection<ConditionedOrigin> origins) {
 			this.origins.addAll(origins);
 			return this;
 		}
 
-		public Builder enabled(Boolean enabled) {
+		@Contract("_ -> this")
+		public Builder enabled(@Nullable Boolean enabled) {
 			this.enabled = enabled;
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder replace(boolean replace) {
 			this.replace = replace;
 			return this;
 		}
 
-		public Builder name(String name) {
+		@Contract("_ -> this")
+		public Builder name(@Nullable String name) {
 			this.name = name;
 			return this;
 		}
 
-		public Builder missingName(String missingName) {
+		@Contract("_ -> this")
+		public Builder missingName(@Nullable String missingName) {
 			this.missingName = missingName;
 			return this;
 		}
 
-		public Builder missingDescription(String missingDescription) {
+		@Contract("_ -> this")
+		public Builder missingDescription(@Nullable String missingDescription) {
 			this.missingDescription = missingDescription;
 			return this;
 		}
 
-		public Builder allowRandom(Boolean allowRandom) {
+		@Contract("_ -> this")
+		public Builder allowRandom(@Nullable Boolean allowRandom) {
 			this.allowRandom = allowRandom;
 			return this;
 		}
 
-		public Builder allowRandomUnchoosable(Boolean allowRandomUnchoosable) {
+		@Contract("_ -> this")
+		public Builder allowRandomUnchoosable(@Nullable Boolean allowRandomUnchoosable) {
 			this.allowRandomUnchoosable = allowRandomUnchoosable;
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder excludeRandom(Collection<ResourceLocation> excludeRandom) {
 			this.excludeRandom.addAll(excludeRandom);
 			return this;
 		}
 
+		/**
+		 * @deprecated Use {@link #replaceExcludeRandom(boolean)} instead. Kept to avoid binary breaking changes.
+		 */
+		@Contract("_ -> this")
+		@Deprecated(forRemoval = true, since = "2.3.3.1")
 		public Builder replaceExcludeRandom(Boolean replaceExcludeRandom) {
+			return this.replaceExcludeRandom(replaceExcludeRandom.booleanValue());
+		}
+
+		@Contract("_ -> this")
+		public Builder replaceExcludeRandom(boolean replaceExcludeRandom) {
 			this.replaceExcludeRandom = replaceExcludeRandom;
 			return this;
 		}
 
-		public Builder defaultOrigin(ResourceLocation defaultOrigin) {
+
+		@Contract("_ -> this")
+		public Builder defaultOrigin(@Nullable ResourceLocation defaultOrigin) {
 			this.defaultOrigin = defaultOrigin;
 			return this;
 		}
 
-		public Builder autoChoose(Boolean autoChoose) {
+		@Contract("_ -> this")
+		public Builder autoChoose(@Nullable Boolean autoChoose) {
 			this.autoChoose = autoChoose;
 			return this;
 		}
 
-		public Builder hidden(Boolean hidden) {
+		@Contract("_ -> this")
+		public Builder hidden(@Nullable Boolean hidden) {
 			this.hidden = hidden;
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder loadingPriority(int loadingPriority) {
 			this.loadingPriority = loadingPriority;
 			return this;
 		}
 
-		public Builder title(PartialGuiTitle title) {
+		@Contract("_ -> this")
+		public Builder title(@Nullable PartialGuiTitle title) {
 			this.title = title;
 			return this;
 		}

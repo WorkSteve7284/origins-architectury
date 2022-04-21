@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Use {@link io.github.edwinmindcraft.origins.api.origin.OriginLayer} where possible instead.
@@ -53,7 +54,7 @@ public class OriginLayer implements Comparable<OriginLayer> {
 	}
 
 	public ResourceLocation getIdentifier() {
-		return this.wrapped.registryName();
+		return this.wrapped.getRegistryName();
 	}
 
 	public boolean isEnabled() {
@@ -106,7 +107,7 @@ public class OriginLayer implements Comparable<OriginLayer> {
 
 	@Override
 	public int hashCode() {
-		return this.wrapped.registryName().hashCode();
+		return this.wrapped.hashCode();
 	}
 
 	@Override
@@ -116,7 +117,7 @@ public class OriginLayer implements Comparable<OriginLayer> {
 		} else if (!(obj instanceof OriginLayer)) {
 			return false;
 		} else {
-			return this.wrapped.registryName().equals(((OriginLayer) obj).wrapped.registryName());
+			return Objects.equals(this.wrapped.getRegistryName(), ((OriginLayer) obj).wrapped.getRegistryName());
 		}
 	}
 

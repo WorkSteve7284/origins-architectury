@@ -32,17 +32,17 @@ public record Badge(ResourceLocation spriteLocation, String hoverText) {
 			"origins.gui.badge.toggle");
 
     public String getHoverText() {
-		return hoverText;
+		return this.hoverText;
 	}
 
 	public ResourceLocation getSpriteLocation() {
-		return spriteLocation;
+		return this.spriteLocation;
 	}
 
 	public SerializableData.Instance getData() {
 		SerializableData.Instance data = DATA.new Instance();
-		data.set("sprite", spriteLocation);
-		data.set("text", hoverText);
+		data.set("sprite", this.spriteLocation);
+		data.set("text", this.hoverText);
 		return data;
 	}
 
@@ -55,7 +55,9 @@ public record Badge(ResourceLocation spriteLocation, String hoverText) {
     }
 
     public JsonElement toJson() {
-        return CODEC.encodeStart(JsonOps.INSTANCE, this).result().get();
+        return CODEC.encodeStart(JsonOps.INSTANCE, this).getOrThrow(false, s -> {
+			throw new JsonParseException("Failed to parse badge: " + s);
+		});
     }
 
     public static Badge fromNetwork(FriendlyByteBuf buf) {

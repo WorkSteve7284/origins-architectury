@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.origins.common.power.configuration.NoSlowdownConfiguration;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class NoSlowdownPower extends PowerFactory<NoSlowdownConfiguration> {

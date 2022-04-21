@@ -22,6 +22,7 @@ public class TemporaryCobwebBlock extends WebBlock {
 	}
 
 	@Override
+	@Deprecated
 	public void tick(@NotNull BlockState state, ServerLevel world, @NotNull BlockPos pos, @NotNull Random random) {
 		if (!world.isClientSide)
 			world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -42,6 +43,5 @@ public class TemporaryCobwebBlock extends WebBlock {
 	@Override
 	public void onPlace(@NotNull BlockState state, Level worldIn, @NotNull BlockPos pos, @NotNull BlockState oldState, boolean isMoving) {
 		worldIn.scheduleTick(pos, this, 60);
-		super.onPlace(state, worldIn, pos, oldState, isMoving);
 	}
 }

@@ -5,6 +5,8 @@ import io.github.edwinmindcraft.origins.api.origin.GuiTitle;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -12,17 +14,22 @@ import java.lang.reflect.Type;
 public record PartialGuiTitle(@Nullable String view,
 							  @Nullable String choose) {
 
-	public GuiTitle create(ResourceLocation identifier) {
+	@NotNull
+	public GuiTitle create(@NotNull ResourceLocation identifier) {
 		return new GuiTitle(
 				this.view() != null ? new TranslatableComponent(!this.view().isEmpty() ? this.view() : "layer.%s.%s.view_origin.name".formatted(identifier.getNamespace(), identifier.getPath())) : null,
 				this.choose() != null ? new TranslatableComponent(!this.choose().isEmpty() ? this.choose() : "layer.%s.%s.choose_origin.name".formatted(identifier.getNamespace(), identifier.getPath())) : null
 		);
 	}
 
-	public PartialGuiTitle merge(PartialGuiTitle other) {
+	@Nullable
+	@Contract("null, null -> null; null, _ -> param2; _, null -> param1")
+	public static PartialGuiTitle merge(@Nullable PartialGuiTitle self, @Nullable PartialGuiTitle other) {
+		if (other == null) return self;
+		if (self == null) return other;
 		return new PartialGuiTitle(
-				other.view() != null ? other.view() : this.view(),
-				other.choose() != null ? other.choose() : this.choose()
+				other.view() != null ? other.view() : self.view(),
+				other.choose() != null ? other.choose() : self.choose()
 		);
 	}
 

@@ -5,7 +5,6 @@ import io.github.edwinmindcraft.apoli.api.power.factory.PowerFactory;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import io.github.edwinmindcraft.origins.common.power.configuration.OriginsCallbackConfiguration;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfiguration> implements IOriginCallbackPower<OriginsCallbackConfiguration> {
@@ -39,7 +38,7 @@ public class OriginsCallbackPower extends PowerFactory<OriginsCallbackConfigurat
 	}
 
 	@Override
-	public void onChosen(OriginsCallbackConfiguration configuration, Entity entity, boolean isOrb) {
+	public void onChosen(@NotNull OriginsCallbackConfiguration configuration, @NotNull Entity entity, boolean isOrb) {
 		if (!isOrb || configuration.onOrb())
 			ConfiguredEntityAction.execute(configuration.entityActionChosen(), entity);
 	}

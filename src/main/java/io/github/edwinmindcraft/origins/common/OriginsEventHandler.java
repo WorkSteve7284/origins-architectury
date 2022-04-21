@@ -10,7 +10,6 @@ import io.github.apace100.origins.power.OriginsPowerTypes;
 import io.github.apace100.origins.registry.ModDamageSources;
 import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.apoli.api.registry.ApoliDynamicRegistries;
-import io.github.edwinmindcraft.apoli.common.registry.ApoliCapabilities;
 import io.github.edwinmindcraft.calio.api.event.CalioDynamicRegistryEvent;
 import io.github.edwinmindcraft.calio.api.registry.ICalioDynamicRegistryManager;
 import io.github.edwinmindcraft.origins.api.OriginsAPI;
@@ -23,12 +22,9 @@ import io.github.edwinmindcraft.origins.common.capabilities.OriginContainer;
 import io.github.edwinmindcraft.origins.common.data.LayerLoader;
 import io.github.edwinmindcraft.origins.common.data.OriginLoader;
 import io.github.edwinmindcraft.origins.common.network.S2COpenOriginScreen;
-import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeBadges;
-import io.github.edwinmindcraft.origins.common.network.S2CSynchronizeOrigin;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +40,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.AdvancementEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
@@ -112,24 +107,23 @@ public class OriginsEventHandler {
 	@SubscribeEvent
 	public static void onAdvancement(AdvancementEvent event) {
 		Advancement advancement = event.getAdvancement();
-		IOriginContainer.get(event.getPlayer()).ifPresent(container -> container.getOrigins().forEach((layer, origin) -> {
-			origin.getUpgrades().stream().filter(x -> Objects.equals(x.advancement(), advancement.getId())).findFirst().ifPresent(upgrade -> {
-				try {
-					Origin target = OriginsAPI.getOriginsRegistry().get(upgrade.origin());
-					if (target != null) {
-						container.setOrigin(layer, target);
-						container.synchronize();
-						if (!upgrade.announcement().isBlank())
-							event.getPlayer().displayClientMessage(new TranslatableComponent(upgrade.announcement()).withStyle(ChatFormatting.GOLD), false);
-					}
-				} catch (IllegalArgumentException e) {
-					Origins.LOGGER.error("Could not perform Origins upgrade from {} to {}, as the upgrade origin did not exist!", origin.getRegistryName(), upgrade.origin());
+		IOriginContainer.get(event.getPlayer()).ifPresent(container -> container.getOrigins().forEach((layer, origin) -> origin.getUpgrades().stream().filter(x -> Objects.equals(x.advancement(), advancement.getId())).findFirst().ifPresent(upgrade -> {
+			try {
+				Origin target = OriginsAPI.getOriginsRegistry().get(upgrade.origin());
+				if (target != null) {
+					container.setOrigin(layer, target);
+					container.synchronize();
+					if (!upgrade.announcement().isBlank())
+						event.getPlayer().displayClientMessage(new TranslatableComponent(upgrade.announcement()).withStyle(ChatFormatting.GOLD), false);
 				}
-			});
-		}));
+			} catch (IllegalArgumentException e) {
+				Origins.LOGGER.error("Could not perform Origins upgrade from {} to {}, as the upgrade origin did not exist!", origin.getRegistryName(), upgrade.origin());
+			}
+		})));
 	}
 
 	@SubscribeEvent
+	@SuppressWarnings("deprecation")
 	public static void reloadComplete(CalioDynamicRegistryEvent.LoadComplete event) {
 		OriginRegistry.clear();
 		OriginLayers.clear();

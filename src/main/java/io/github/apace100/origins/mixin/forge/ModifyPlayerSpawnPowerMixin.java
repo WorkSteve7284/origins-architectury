@@ -4,7 +4,7 @@ import io.github.edwinmindcraft.apoli.common.power.ModifyPlayerSpawnPower;
 import io.github.edwinmindcraft.apoli.common.power.configuration.ModifyPlayerSpawnConfiguration;
 import io.github.edwinmindcraft.origins.api.origin.IOriginCallbackPower;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -14,7 +14,7 @@ public abstract class ModifyPlayerSpawnPowerMixin implements IOriginCallbackPowe
 	public abstract void teleportToModifiedSpawn(ModifyPlayerSpawnConfiguration configuration, Entity entity);
 
 	@Override
-	public void onChosen(ModifyPlayerSpawnConfiguration configuration, Entity living, boolean isOrb) {
+	public void onChosen(@NotNull ModifyPlayerSpawnConfiguration configuration, @NotNull Entity living, boolean isOrb) {
 		if (!isOrb) //This is IMO a better way to do this.
 			this.teleportToModifiedSpawn(configuration, living);
 	}

@@ -90,14 +90,12 @@ public class OriginCommand {
 								.then(argument("targets", EntityArgument.players())
 										.executes((command) -> {
 											Collection<ServerPlayer> targets = EntityArgument.getPlayers(command, "targets");
-											targets.forEach(target -> {
-												IOriginContainer.get(target).ifPresent(container -> {
-													OriginsAPI.getActiveLayers().forEach(x -> container.setOrigin(x, Origin.EMPTY));
-													container.synchronize();
-													container.checkAutoChoosingLayers(false);
-													OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
-												});
-											});
+											targets.forEach(target -> IOriginContainer.get(target).ifPresent(container -> {
+												OriginsAPI.getActiveLayers().forEach(x -> container.setOrigin(x, Origin.EMPTY));
+												container.synchronize();
+												container.checkAutoChoosingLayers(false);
+												OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
+											}));
 											command.getSource().sendSuccess(new TranslatableComponent("commands.origin.gui.all", targets.size()), false);
 											return targets.size();
 										})
@@ -105,15 +103,13 @@ public class OriginCommand {
 												.executes((command) -> {
 													OriginLayer layer = LayerArgumentType.getLayer(command, "layer");
 													Collection<ServerPlayer> targets = EntityArgument.getPlayers(command, "targets");
-													targets.forEach(target -> {
-														IOriginContainer.get(target).ifPresent(container -> {
-															if (layer.enabled())
-																container.setOrigin(layer, Origin.EMPTY);
-															container.synchronize();
-															container.checkAutoChoosingLayers(false);
-															OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
-														});
-													});
+													targets.forEach(target -> IOriginContainer.get(target).ifPresent(container -> {
+														if (layer.enabled())
+															container.setOrigin(layer, Origin.EMPTY);
+														container.synchronize();
+														container.checkAutoChoosingLayers(false);
+														OriginsCommon.CHANNEL.send(PacketDistributor.PLAYER.with(() -> target), new S2COpenOriginScreen(false));
+													}));
 													command.getSource().sendSuccess(new TranslatableComponent("commands.origin.gui.layer", targets.size(), layer.name()), false);
 													return targets.size();
 												})

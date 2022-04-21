@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 public final class WaterBreathingMixin {
@@ -38,9 +37,6 @@ public final class WaterBreathingMixin {
 		protected UpdateAir(EntityType<? extends LivingEntity> entityType, Level world) {
 			super(entityType, world);
 		}
-
-		@Inject(at = @At("TAIL"), method = "tick")
-		private void tick(CallbackInfo info) {}
 
 		@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;isEyeInFluid(Lnet/minecraft/tags/TagKey;)Z"), method = "turtleHelmetTick")
 		public boolean isSubmergedInProxy(Player player, TagKey<Fluid> fluidTag) {

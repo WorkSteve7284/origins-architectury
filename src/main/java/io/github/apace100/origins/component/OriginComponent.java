@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
 
+@SuppressWarnings("deprecation")
 public interface OriginComponent {
 
 	boolean hasOrigin(OriginLayer layer);
@@ -24,7 +25,7 @@ public interface OriginComponent {
 	void sync();
 
 	@Deprecated(forRemoval = true)
-	default void onPowersRead() { }
+	default void onPowersRead() {}
 
 	static void sync(Player player) {
 		IOriginContainer.get(player).ifPresent(IOriginContainer::synchronize);

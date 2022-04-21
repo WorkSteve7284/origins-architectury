@@ -9,13 +9,11 @@ import net.minecraft.ResourceLocationException;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -59,7 +57,7 @@ public class JsonUtils {
 		return IntStream.range(0, array.size()).mapToObj(array::get);
 	}
 
-	public static <T,V> Function<T, V> rethrow(Function<T, V> input, String message) {
+	public static <T, V> Function<T, V> rethrow(Function<T, V> input, String message) {
 		return t -> {
 			try {
 				return input.apply(t);

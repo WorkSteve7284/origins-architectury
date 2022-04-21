@@ -13,6 +13,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +70,17 @@ public record PartialOrigin(@NotNull Set<ResourceLocation> powers,
 
 		@Override
 		public JsonElement serialize(PartialOrigin src, Type typeOfSrc, JsonSerializationContext context) {
-			return null;
+			JsonObject root = new JsonObject();
+			root.add("powers", src.powers().stream().map(ResourceLocation::toString).map(JsonPrimitive::new).collect(JsonUtils.toJsonArray()));
+			if (src.icon() != null) root.add("icon", CompatibilityDataTypes.ITEM_OR_ITEM_STACK.write(src.icon()));
+			if (src.unchoosable() != null) root.addProperty("unchoosable", src.unchoosable());
+			if (src.order() != null) root.addProperty("order", src.order());
+			if (src.impact() != null) root.addProperty("impact", src.impact().ordinal());
+			if (src.name() != null) root.addProperty("name", src.name());
+			if (src.description() != null) root.addProperty("description", src.description());
+			root.add("upgrades", src.upgrades().stream().map(x -> context.serialize(x, OriginUpgrade.class)).collect(JsonUtils.toJsonArray()));
+			if (src.loadingOrder() != 0) root.addProperty("loading_priority", src.loadingOrder());
+			return root;
 		}
 	}
 
@@ -90,57 +101,68 @@ public record PartialOrigin(@NotNull Set<ResourceLocation> powers,
 
 		private Builder() {}
 
+		@Contract("_ -> this")
 		public Builder powers(Iterable<ResourceLocation> powers) {
 			Origins.LOGGER.info("Found powers [{}]", String.join(",", Streams.stream(powers).map(ResourceLocation::toString).collect(Collectors.toSet())));
 			this.powers.addAll(powers);
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder powers(ResourceLocation... powers) {
 			this.powers.add(powers);
 			return this;
 		}
 
-		public Builder icon(ItemStack icon) {
+		@Contract("_ -> this")
+		public Builder icon(@Nullable ItemStack icon) {
 			this.icon = icon;
 			return this;
 		}
 
-		public Builder unchoosable(Boolean unchoosable) {
+		@Contract("_ -> this")
+		public Builder unchoosable(@Nullable Boolean unchoosable) {
 			this.unchoosable = unchoosable;
 			return this;
 		}
 
-		public Builder order(Integer order) {
+		@Contract("_ -> this")
+		public Builder order(@Nullable Integer order) {
 			this.order = order;
 			return this;
 		}
 
-		public Builder impact(Impact impact) {
+		@Contract("_ -> this")
+		public Builder impact(@Nullable Impact impact) {
 			this.impact = impact;
 			return this;
 		}
 
-		public Builder name(String name) {
+		@Contract("_ -> this")
+		public Builder name(@Nullable String name) {
 			this.name = name;
 			return this;
 		}
 
-		public Builder description(String description) {
+		@Contract("_ -> this")
+		public Builder description(@Nullable String description) {
 			this.description = description;
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder upgrades(Iterable<OriginUpgrade> upgrades) {
 			this.upgrades.addAll(upgrades);
 			return this;
 		}
 
-		public Builder upgrades(OriginUpgrade... upgrades) {
+		@Contract("_ -> this")
+		public Builder upgrades(@Nullable OriginUpgrade... upgrades) {
 			this.upgrades.add(upgrades);
 			return this;
 		}
 
+		@Contract("_ -> this")
 		public Builder loadingOrder(int loadingOrder) {
 			this.loadingOrder = loadingOrder;
 			return this;

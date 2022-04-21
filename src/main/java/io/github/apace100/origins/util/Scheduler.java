@@ -36,7 +36,7 @@ import java.util.function.IntPredicate;
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE.
  * <p>
- * For more information, please refer to <http://unlicense.org/>
+ * For more information, please refer to <<a href="http://unlicense.org/">http://unlicense.org/</a>>
  */
 public class Scheduler {
 	private final Int2ObjectMap<List<Consumer<MinecraftServer>>> taskQueue = new Int2ObjectOpenHashMap<>();
@@ -49,14 +49,14 @@ public class Scheduler {
 			MinecraftServer m = ServerLifecycleHooks.getCurrentServer();
 			this.currentTick = m.getTickCount();
 			List<Consumer<MinecraftServer>> runnables = this.taskQueue.remove(this.currentTick);
-			if (runnables != null) for (int i = 0; i < runnables.size(); i++) {
-				Consumer<MinecraftServer> runnable = runnables.get(i);
-				runnable.accept(m);
+			if (runnables != null) {
+				for (Consumer<MinecraftServer> runnable : runnables) {
+					runnable.accept(m);
 
-				if (runnable instanceof Repeating) {// reschedule repeating tasks
-					Repeating repeating = ((Repeating) runnable);
-					if (repeating.shouldQueue(this.currentTick))
-						this.queue(runnable, ((Repeating) runnable).next);
+					if (runnable instanceof Repeating repeating) {// reschedule repeating tasks
+						if (repeating.shouldQueue(this.currentTick))
+							this.queue(runnable, repeating.next);
+					}
 				}
 			}
 		});
@@ -87,7 +87,7 @@ public class Scheduler {
 	 * repeat the given task until the predicate returns false
 	 *
 	 * @param task     the action to perform
-	 * @param requeue  whether or not to reschedule the task again, with the parameter being the current tick
+	 * @param requeue  whether to reschedule the task again, with the parameter being the current tick
 	 * @param tick     how many ticks in the future this event should first be called
 	 * @param interval the number of ticks in between each execution
 	 */

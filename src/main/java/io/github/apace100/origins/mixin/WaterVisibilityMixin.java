@@ -1,8 +1,6 @@
 package io.github.apace100.origins.mixin;
 
 import com.mojang.authlib.GameProfile;
-import io.github.apace100.origins.power.OriginsPowerTypes;
-import io.github.edwinmindcraft.apoli.api.component.IPowerContainer;
 import io.github.edwinmindcraft.origins.common.power.WaterVisionPower;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;

@@ -9,8 +9,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.util.LazyOptional;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class WaitForNextLayerScreen extends Screen {
 
@@ -26,7 +28,7 @@ public class WaitForNextLayerScreen extends Screen {
 		this.showDirtBackground = showDirtBackground;
 		Player player = Minecraft.getInstance().player;
 		OriginLayer currentLayer = layerList.get(currentLayerIndex);
-		this.maxSelection = currentLayer.getOriginOptionCount(player);
+		this.maxSelection = currentLayer.getOriginOptionCount(Objects.requireNonNull(player));
 	}
 
 	public void openSelection() {
@@ -39,7 +41,7 @@ public class WaitForNextLayerScreen extends Screen {
 		}
 		IOriginContainer component = iOriginContainerLazyOptional.orElseThrow(RuntimeException::new);
 		while (index < this.layerList.size()) {
-			if (!component.hasOrigin(this.layerList.get(index)) && this.layerList.get(index).origins(player).size() > 0) {
+			if (!component.hasOrigin(this.layerList.get(index)) && this.layerList.get(index).origins(Objects.requireNonNull(player)).size() > 0) {
 				Minecraft.getInstance().setScreen(new ChooseOriginScreen(this.layerList, index, this.showDirtBackground));
 				return;
 			}
@@ -49,7 +51,7 @@ public class WaitForNextLayerScreen extends Screen {
 	}
 
 	@Override
-	public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(@NotNull PoseStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.maxSelection == 0) {
 			this.openSelection();
 			return;
@@ -58,7 +60,7 @@ public class WaitForNextLayerScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(PoseStack matrices, int vOffset) {
+	public void renderBackground(@NotNull PoseStack matrices, int vOffset) {
 		if (this.showDirtBackground) {
 			super.renderDirtBackground(vOffset);
 		} else {
