@@ -1,4 +1,4 @@
-I just made this to change water protection because I want to. The only thing I changed is that I deleted a bunch of lines stopping water protection form adding to the other protections. Everything else was made by 
+I just made this to change water protection because I want to. The only thing I changed is that I deleted a bunch of lines stopping water protection form adding to the other protections. Everything else was made by Edwinmindcraft and apace100
 # Origins (Forge)
 
 This is the repository for the source of the unofficial forge port of the Origins mod.
