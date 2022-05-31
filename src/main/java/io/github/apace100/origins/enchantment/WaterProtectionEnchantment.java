@@ -27,12 +27,5 @@ public class WaterProtectionEnchantment extends Enchantment {
     public int getMaxLevel() {
         return 4;
     }
-
-    @Override
-    protected boolean checkCompatibility(@NotNull Enchantment other) {
-        if(other == this || ((other instanceof ProtectionEnchantment && !(((ProtectionEnchantment)other).type == ProtectionEnchantment.Type.FALL)))) {
-            return false;
-        }
-        return super.checkCompatibility(other);
-    }
+    
 }
